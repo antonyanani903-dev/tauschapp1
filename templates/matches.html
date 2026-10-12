@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Matches — Seitentausch{% endblock %}
+{% block content %}
+{% if matches %}
+  {% for m in matches %}
+    {% set them = m.other_user(current_user.id) %}
+    {% set their_book = m.their_book(current_user.id) %}
+    <a class="match-item" href="{{ url_for('chat', match_id=m.id) }}">
+      <div class="mini-cover">
+        {% if their_book.image_filename %}
+          <img src="{{ url_for('static', filename='uploads/' ~ their_book.image_filename) }}" alt="{{ their_book.title }}">
+        {% else %}
+          <span>📕</span>
+        {% endif %}
+      </div>
+      <div class="info">
+        <p class="t serif">{{ them.name }} — {{ their_book.title }}</p>
+        <p class="s">Match! Tippen zum Chatten</p>
+      </div>
+    </a>
+  {% endfor %}
+{% else %}
+  <div class="empty">
+    <div class="big">🤝</div>
+    Noch keine Matches.<br>Lik' Bücher unter „Entdecken“, um loszulegen.
+  </div>
+{% endif %}
+{% endblock %}

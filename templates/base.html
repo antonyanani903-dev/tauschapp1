@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{% block title %}Seitentausch{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+{% if current_user.is_authenticated %}
+<header>
+  <a class="brand" href="{{ url_for('discover') }}">Seiten<span>tausch</span></a>
+  <a class="profile-link" href="{{ url_for('profile') }}">{{ current_user.name.split(' ')[0] }}</a>
+</header>
+{% endif %}
+
+<main{% if not current_user.is_authenticated %} class="full"{% endif %}>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-stack">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+{% if current_user.is_authenticated %}
+<nav class="tabs">
+  <a href="{{ url_for('discover') }}" class="{{ 'active' if request.endpoint == 'discover' else '' }}">
+    <span class="ic">📖</span>Entdecken
+  </a>
+  <a href="{{ url_for('my_books') }}" class="{{ 'active' if request.endpoint in ['my_books'] else '' }}">
+    <span class="ic">🗂️</span>Meine Bücher
+  </a>
+  <a href="{{ url_for('matches') }}" class="{{ 'active' if request.endpoint in ['matches', 'chat'] else '' }}">
+    <span class="ic">🤝</span>Matches
+  </a>
+</nav>
+{% endif %}
+
+{% block scripts %}{% endblock %}
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

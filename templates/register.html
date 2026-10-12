@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Registrieren — Seitentausch{% endblock %}
+{% block content %}
+<div class="auth-form">
+  <h1 class="serif">Konto erstellen</h1>
+  <form method="POST" novalidate>
+    <label>Name</label>
+    <input type="text" name="name" required placeholder="Wie dich andere sehen">
+
+    <label>E-Mail</label>
+    <input type="email" name="email" required placeholder="du@beispiel.de">
+
+    <label>Passwort</label>
+    <input type="password" name="password" required minlength="8" placeholder="Mindestens 8 Zeichen">
+
+    <label>Stadt <span class="optional">(optional)</span></label>
+    <input type="text" name="city" placeholder="für Treffpunkte in deiner Nähe">
+
+    <button type="submit">Konto erstellen</button>
+  </form>
+  <p class="auth-switch">Schon dabei? <a href="{{ url_for('login') }}">Anmelden</a></p>
+</div>
+{% endblock %}

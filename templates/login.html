@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Anmelden — Seitentausch{% endblock %}
+{% block content %}
+<div class="auth-form">
+  <h1 class="serif">Willkommen zurück</h1>
+  <form method="POST" novalidate>
+    <label>E-Mail</label>
+    <input type="email" name="email" required placeholder="du@beispiel.de">
+
+    <label>Passwort</label>
+    <input type="password" name="password" required placeholder="Dein Passwort">
+
+    <button type="submit">Anmelden</button>
+  </form>
+  <p class="auth-switch">Noch kein Konto? <a href="{{ url_for('register') }}">Registrieren</a></p>
+</div>
+{% endblock %}

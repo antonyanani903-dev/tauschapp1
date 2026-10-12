@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Meine Bücher — Seitentausch{% endblock %}
+{% block content %}
+<p class="section-title">Neues Buch hinzufügen</p>
+<form class="addbook" method="POST" action="{{ url_for('add_book') }}" enctype="multipart/form-data">
+  <label>Titel</label>
+  <input type="text" name="title" required placeholder="z. B. Pinocchio, illustrierte Ausgabe">
+
+  <label>Autor / Illustrator</label>
+  <input type="text" name="author" required placeholder="z. B. Carlo Collodi">
+
+  <label>Zustand</label>
+  <select name="condition">
+    {% for c in conditions %}
+      <option {% if c == 'Gut' %}selected{% endif %}>{{ c }}</option>
+    {% endfor %}
+  </select>
+
+  <label>Beschreibung <span class="optional">(optional)</span></label>
+  <input type="text" name="description" placeholder="Besonderheiten, Auflage, Zustand im Detail …">
+
+  <label>Foto <span class="optional">(optional)</span></label>
+  <input type="file" name="image" accept="image/png,image/jpeg,image/webp">
+
+  <button type="submit">Buch hochladen</button>
+</form>
+
+<p class="section-title">Deine Bücher ({{ books|length }})</p>
+{% if books %}
+  {% for b in books %}
+    <div class="card-row">
+      <div class="mini-cover">
+        {% if b.image_filename %}
+          <img src="{{ url_for('static', filename='uploads/' ~ b.image_filename) }}" alt="{{ b.title }}">
+        {% else %}
+          <span>📕</span>
+        {% endif %}
+      </div>
+      <div class="info">
+        <p class="t serif">{{ b.title }}</p>
+        <p class="s">{{ b.author }} · {{ b.condition }}</p>
+      </div>
+      <form method="POST" action="{{ url_for('delete_book', book_id=b.id) }}" onsubmit="return confirm('Dieses Buch wirklich entfernen?');">
+        <button type="submit" class="del">✕</button>
+      </form>
+    </div>
+  {% endfor %}
+{% else %}
+  <p class="muted">Du hast noch keine Bücher hochgeladen.</p>
+{% endif %}
+{% endblock %}

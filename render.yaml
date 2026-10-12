@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: seitentausch-app
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app:app"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: seitentausch-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.12.3
+
+databases:
+  - name: seitentausch-db
+    plan: free
+    databaseName: seitentausch
+    user: seitentausch

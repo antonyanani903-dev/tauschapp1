@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Profil — Seitentausch{% endblock %}
+{% block content %}
+<div class="auth-form">
+  <h1 class="serif">{{ current_user.name }}</h1>
+  <p class="muted">{{ current_user.email }}</p>
+  {% if current_user.city %}<p class="muted">{{ current_user.city }}</p>{% endif %}
+  <p class="muted">Dabei seit {{ current_user.created_at.strftime('%d.%m.%Y') }}</p>
+  <a href="{{ url_for('logout') }}" class="btn btn-ghost" style="margin-top:20px; display:inline-block;">Abmelden</a>
+</div>
+{% endblock %}

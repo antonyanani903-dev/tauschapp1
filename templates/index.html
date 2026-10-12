@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Seitentausch — Illustrationsbücher tauschen{% endblock %}
+{% block content %}
+<div class="landing">
+  <h1 class="serif">Seiten<span>tausch</span></h1>
+  <p class="lead">Gebrauchte Illustrationsbücher hochladen, liken, matchen — und mit anderen Buchliebhaber:innen aus deiner Nähe tauschen.</p>
+  <div class="landing-actions">
+    <a href="{{ url_for('register') }}" class="btn btn-primary">Konto erstellen</a>
+    <a href="{{ url_for('login') }}" class="btn btn-ghost">Anmelden</a>
+  </div>
+</div>
+{% endblock %}

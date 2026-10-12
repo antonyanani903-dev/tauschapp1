@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Entdecken — Seitentausch{% endblock %}
+{% block content %}
+{% if book %}
+  <div class="stack">
+    <div class="card" data-book-id="{{ book.id }}">
+      <div class="cover">
+        {% if book.image_filename %}
+          <img src="{{ url_for('static', filename='uploads/' ~ book.image_filename) }}" alt="{{ book.title }}">
+        {% else %}
+          <span class="cover-placeholder">📕</span>
+        {% endif %}
+      </div>
+      <div class="cover-info">
+        <p class="title serif">{{ book.title }}</p>
+        <p class="meta">{{ book.author }} · von {{ book.owner.name }}{% if book.owner.city %} ({{ book.owner.city }}){% endif %}</p>
+        {% if book.description %}<p class="desc">{{ book.description }}</p>{% endif %}
+        <span class="tag">{{ book.condition }}</span>
+      </div>
+    </div>
+  </div>
+  <form id="swipe-form" class="swipe-btns">
+    <button type="button" class="pass" data-decision="skip">Nicht interessiert</button>
+    <button type="button" class="like" data-decision="like">Gefällt mir</button>
+  </form>
+  <p class="hint">{{ remaining }} Buch{{ '' if remaining == 1 else 'ücher' }} in der Runde</p>
+{% else %}
+  <div class="empty">
+    <div class="big">📚</div>
+    Keine neuen Bücher gerade.<br>Schau später wieder vorbei oder lade selbst eins hoch.
+    <div style="margin-top:18px">
+      <a href="{{ url_for('my_books') }}" class="btn btn-primary">Buch hochladen</a>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if book %}
+<script>
+  const bookId = {{ book.id }};
+  document.querySelectorAll('#swipe-form button').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const decision = btn.dataset.decision;
+      const res = await fetch(`/swipe/${bookId}/${decision}`, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'fetch' }
+      });
+      const data = await res.json();
+      if (data.matched) {
+        window.location.href = "{{ url_for('matches') }}";
+      } else {
+        window.location.reload();
+      }
+    });
+  });
+</script>
+{% endif %}
+{% endblock %}

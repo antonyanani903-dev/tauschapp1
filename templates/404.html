@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Nicht gefunden — Seitentausch{% endblock %}
+{% block content %}
+<div class="empty">
+  <div class="big">🔎</div>
+  Diese Seite gibt es nicht.<br>
+  <a href="{{ url_for('index') }}" class="btn btn-primary" style="margin-top:18px; display:inline-block;">Zur Startseite</a>
+</div>
+{% endblock %}
