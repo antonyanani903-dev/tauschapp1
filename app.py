@@ -31,9 +31,13 @@ def create_app():
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-only-insecure-key")
 
     database_url = os.environ.get("DATABASE_URL", "sqlite:///local.db")
-    # Render liefert "postgres://", SQLAlchemy 2.x will "postgresql://"
+    # Render liefert "postgres://" oder "postgresql://" ohne Treiberangabe.
+    # Wir erzwingen explizit psycopg2 (das installierte Paket), damit
+    # SQLAlchemy nicht versucht, das nicht-installierte "psycopg" (v3) zu laden.
     if database_url.startswith("postgres://"):
-        database_url = database_url.replace("postgres://", "postgresql://", 1)
+        database_url = database_url.replace("postgres://", "postgresql+psycopg2://", 1)
+    elif database_url.startswith("postgresql://") and "+psycopg" not in database_url:
+        database_url = database_url.replace("postgresql://", "postgresql+psycopg2://", 1)
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
