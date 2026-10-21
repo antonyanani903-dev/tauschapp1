@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Registrieren – {{ SITE_NAME }}{% endblock %}
+{% block content %}
+{% set f = form or {} %}
+<form class="auth-form" method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <h1>Konto erstellen</h1>
+  <label for="name">Name</label>
+  <input id="name" name="name" value="{{ f.name or '' }}" required maxlength="100" autocomplete="name">
+  <label for="email">E-Mail</label>
+  <input id="email" type="email" name="email" value="{{ f.email or '' }}" required autocomplete="email">
+  <label for="password">Passwort <span class="optional">(mind. 8 Zeichen)</span></label>
+  <input id="password" type="password" name="password" required minlength="8" autocomplete="new-password">
+
+  <label>Wo wohnst du? <span class="optional">(optional, für Bücher in deiner Nähe)</span></label>
+  <div class="row">
+    <select name="country" aria-label="Land" style="max-width:110px">
+      {% for code, label in COUNTRIES.items() %}
+      <option value="{{ code }}" {{ 'selected' if f.country == code else '' }}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <input name="location" value="{{ f.location or '' }}" placeholder="PLZ oder Ort" aria-label="PLZ oder Ort">
+  </div>
+  <p class="footnote">Gespeichert wird nur grob die PLZ/der Ort, nie deine Adresse. Anderen wird nur eine ungefähre Entfernung angezeigt.</p>
+
+  <label class="check">
+    <input type="checkbox" name="accept_privacy" value="yes" required>
+    <span>Ich habe die {% if PRIVACY_URL %}<a href="{{ PRIVACY_URL }}" target="_blank" rel="noopener"><u>Datenschutzerklärung</u></a>{% else %}Datenschutzerklärung{% endif %} gelesen und bin einverstanden.</span>
+  </label>
+  <button type="submit">Registrieren</button>
+  <p class="auth-switch">Schon ein Konto? <a href="{{ url_for('login') }}">Anmelden</a></p>
+</form>
+{% endblock %}

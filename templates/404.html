@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="empty">
+  <div class="big">📚</div>
+  <p>{{ message or "Diese Seite gibt es nicht." }}</p>
+  <p style="margin-top:18px"><a class="btn btn-primary" href="{{ url_for('index') }}">Zur Startseite</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Meine Bücher – {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<h1 class="page-title">Meine Bücher</h1>
+
+<form class="addbook" method="post" action="{{ url_for('add_book') }}" enctype="multipart/form-data">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <h2 class="serif" style="font-size:20px;margin-bottom:4px">Buch hinzufügen</h2>
+  <label for="title">Titel</label>
+  <input id="title" name="title" required maxlength="255">
+  <label for="author">Autor/in</label>
+  <input id="author" name="author" required maxlength="255">
+  <label for="condition">Zustand</label>
+  <select id="condition" name="condition">
+    {% for c in CONDITIONS %}<option {{ 'selected' if c == 'Gut' else '' }}>{{ c }}</option>{% endfor %}
+  </select>
+  <label for="description">Beschreibung <span class="optional">(optional)</span></label>
+  <textarea id="description" name="description" maxlength="1000" rows="2" placeholder="z. B. Illustrator, Ausgabe, Gebrauchsspuren"></textarea>
+  <label for="image">Foto <span class="optional">(optional, JPG/PNG/WebP)</span></label>
+  <input id="image" type="file" name="image" accept="image/*">
+  <button type="submit">Hochladen</button>
+</form>
+
+{% if books %}
+<h2 class="section-title">Deine Bücher ({{ books|length }})</h2>
+{% for b in books %}
+<div class="card-row {{ 'inactive' if not b.is_active else '' }}">
+  <div class="mini-cover">{% if book_img(b) %}<img src="{{ book_img(b) }}" alt="">{% else %}📖{% endif %}</div>
+  <div class="info">
+    <p class="t">{{ b.title }}
+      {% if b.swapped_at %}<span class="status-tag swapped">getauscht</span>
+      {% elif not b.is_active %}<span class="status-tag">pausiert</span>{% endif %}</p>
+    <p class="s">{{ b.author }} · {{ b.condition }}</p>
+    {% if likes.get(b.id) %}<p class="s likes">♥ {{ likes[b.id] }} Interessent{{ 'en' if likes[b.id] != 1 else '' }}</p>{% endif %}
+  </div>
+  <div class="actions">
+    <a class="link-btn" href="{{ url_for('edit_book', book_id=b.id) }}">Bearbeiten</a>
+    <form method="post" action="{{ url_for('toggle_book', book_id=b.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="link-btn" type="submit">{% if b.swapped_at %}Wieder anbieten{% elif b.is_active %}Pausieren{% else %}Anbieten{% endif %}</button>
+    </form>
+    <form method="post" action="{{ url_for('delete_book', book_id=b.id) }}" data-confirm="„{{ b.title }}“ wirklich entfernen?">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="link-btn danger" type="submit">Löschen</button>
+    </form>
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="empty"><div class="big">🗂️</div><p>Noch keine Bücher. Lade dein erstes hoch, damit andere dich finden und matchen können.</p></div>
+{% endif %}
+{% endblock %}

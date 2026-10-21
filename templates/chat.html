@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ other.name }} – {{ SITE_NAME }}{% endblock %}
+{% block current_match %}{{ match.id }}{% endblock %}
+{% block content %}
+<div class="chat-head-inline">
+  <a class="back" href="{{ url_for('matches') }}" aria-label="Zurück">←</a>
+  <div class="grow">
+    <div class="t">{{ other.name }}</div>
+    <div class="s">{% if distance %}📍 {{ distance }} entfernt{% else %}Tausch-Chat{% endif %}</div>
+  </div>
+  <details class="chat-menu">
+    <summary aria-label="Menü">⋯</summary>
+    <div class="menu">
+      {% if match.status == 'active' %}
+      <form method="post" action="{{ url_for('complete_match', match_id=match.id) }}" data-confirm="Tausch als abgeschlossen markieren? Beide Bücher werden nicht mehr angeboten.">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit">✅ Tausch abgeschlossen</button>
+      </form>
+      {% endif %}
+      <button type="button" id="open-report">🚩 Melden</button>
+      <form method="post" action="{{ url_for('block_user', match_id=match.id) }}" data-confirm="{{ other.name }} blockieren? Ihr seht eure Bücher und Chats danach nicht mehr.">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="danger">⛔ Blockieren</button>
+      </form>
+    </div>
+  </details>
+</div>
+
+<div class="swap-summary">
+  <div class="b">
+    <div class="mini-cover">{% if book_img(mine) %}<img src="{{ book_img(mine) }}" alt="">{% else %}📖{% endif %}</div>
+    <div><small>Du gibst</small><b>{{ mine.title }}</b></div>
+  </div>
+  <span>⇄</span>
+  <div class="b">
+    <div class="mini-cover">{% if book_img(theirs) %}<img src="{{ book_img(theirs) }}" alt="">{% else %}📖{% endif %}</div>
+    <div><small>Du bekommst</small><b>{{ theirs.title }}</b></div>
+  </div>
+</div>
+
+{% if match.status != 'active' %}
+<div class="done-banner">
+  <span>✅ Dieser Tausch ist abgeschlossen.</span>
+  <form method="post" action="{{ url_for('reopen_match', match_id=match.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="link-btn" type="submit">Wieder öffnen</button>
+  </form>
+</div>
+{% else %}
+<div class="safety">🔒 Triff dich für den Tausch an einem öffentlichen Ort und gib keine Adresse oder Zahlungsdaten weiter.</div>
+{% endif %}
+
+<div class="chat-msgs" id="msgs" aria-live="polite"></div>
+
+{% if match.status == 'active' %}
+<div class="chips" id="chips">
+  <button type="button" class="chip">Hallo! Wollen wir tauschen? 😊</button>
+  <button type="button" class="chip">Wo und wann passt es dir?</button>
+  <button type="button" class="chip">Wie ist der Zustand genau?</button>
+</div>
+{% endif %}
+
+<form class="chat-input" id="chat-form" data-post-url="{{ url_for('chat', match_id=match.id) }}"
+      data-poll-url="{{ url_for('chat_messages', match_id=match.id) }}" data-no-lock>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <textarea name="content" id="content" rows="1" maxlength="2000" placeholder="Nachricht schreiben …" required></textarea>
+  <button type="submit" id="send">Senden</button>
+</form>
+
+<dialog class="modal" id="report-dialog">
+  <form method="post" action="{{ url_for('report_user', match_id=match.id) }}" data-no-lock>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <h3>{{ other.name }} melden</h3>
+    <label class="field" for="reason">Grund</label>
+    <select id="reason" name="reason" class="input">
+      {% for key, label in report_reasons.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+    </select>
+    <label class="field" for="details">Details <span class="optional">(optional)</span></label>
+    <textarea id="details" name="details" class="input" maxlength="1000" rows="3"></textarea>
+    <label class="check"><input type="checkbox" name="also_block" value="yes"> Person außerdem blockieren</label>
+    <div class="row" style="margin-top:16px">
+      <button type="button" class="btn btn-ghost" id="report-cancel">Abbrechen</button>
+      <button type="submit" class="btn btn-danger">Melden</button>
+    </div>
+  </form>
+</dialog>
+
+<script type="application/json" id="initial-messages">{{ messages|tojson }}</script>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/chat.js') }}"></script>{% endblock %}

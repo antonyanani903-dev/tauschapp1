@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Buch bearbeiten – {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<h1 class="page-title">Buch bearbeiten</h1>
+<form class="addbook" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {% if book_img(book) %}<img class="edit-preview" src="{{ book_img(book) }}" alt="">{% endif %}
+  <label for="title">Titel</label>
+  <input id="title" name="title" value="{{ book.title }}" required maxlength="255">
+  <label for="author">Autor/in</label>
+  <input id="author" name="author" value="{{ book.author }}" required maxlength="255">
+  <label for="condition">Zustand</label>
+  <select id="condition" name="condition">
+    {% for c in CONDITIONS %}<option {{ 'selected' if c == book.condition else '' }}>{{ c }}</option>{% endfor %}
+  </select>
+  <label for="description">Beschreibung</label>
+  <textarea id="description" name="description" maxlength="1000" rows="3">{{ book.description or '' }}</textarea>
+  <label for="image">{% if book.has_image %}Neues Foto <span class="optional">(ersetzt das bisherige)</span>{% else %}Foto{% endif %}</label>
+  <input id="image" type="file" name="image" accept="image/*">
+  {% if book.has_image %}<label class="check"><input type="checkbox" name="remove_image" value="yes"> Foto entfernen</label>{% endif %}
+  <button type="submit">Speichern</button>
+  <p style="text-align:center;margin-top:12px"><a class="link-btn" href="{{ url_for('my_books') }}">Abbrechen</a></p>
+</form>
+{% endblock %}

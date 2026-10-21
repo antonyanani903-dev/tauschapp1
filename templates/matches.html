@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Matches – {{ SITE_NAME }}{% endblock %}
+{% macro row(r, done=False) %}
+<a class="match-item {{ 'is-new' if r.is_new else '' }} {{ 'done' if done else '' }}" href="{{ url_for('chat', match_id=r.match.id) }}">
+  <div class="pair">
+    <div class="mini-cover">{% if book_img(r.mine) %}<img src="{{ book_img(r.mine) }}" alt="">{% else %}📖{% endif %}</div>
+    <div class="mini-cover">{% if book_img(r.theirs) %}<img src="{{ book_img(r.theirs) }}" alt="">{% else %}📖{% endif %}</div>
+  </div>
+  <div class="info">
+    <p class="t">{{ r.other.name }}</p>
+    <p class="s">{{ r.mine.title }} ⇄ {{ r.theirs.title }}</p>
+    <p class="s last {{ 'unread' if r.unread else '' }}">
+      {% if r.last %}{{ ('Du: ' if r.last.sender_id == current_user.id else '') ~ r.last.content }}
+      {% elif r.is_new %}Neues Match – sag Hallo!{% else %}Noch keine Nachrichten{% endif %}
+    </p>
+    {% if r.distance %}<p class="s">📍 {{ r.distance }}</p>{% endif %}
+  </div>
+  <div class="meta-end">
+    <span>{{ r.when|short_when }}</span>
+    {% if r.unread %}<span class="pill-count">{{ r.unread }}</span>{% elif r.is_new %}<span class="pill-new">NEU</span>{% endif %}
+  </div>
+</a>
+{% endmacro %}
+{% block content %}
+<h1 class="page-title">Matches</h1>
+{% if active %}
+  {% for r in active %}{{ row(r) }}{% endfor %}
+{% elif not completed %}
+  <div class="empty"><div class="big">🤝</div><p>Noch keine Matches. Sobald dir jemand ein Buch zurückgeben kann, das du magst, erscheint es hier – und du wirst sofort benachrichtigt.</p>
+  <p style="margin-top:16px"><a class="btn btn-primary" href="{{ url_for('discover') }}">Bücher entdecken</a></p></div>
+{% else %}
+  <p class="muted">Keine offenen Tausche.</p>
+{% endif %}
+{% if completed %}
+<h2 class="section-title">Abgeschlossene Tausche</h2>
+{% for r in completed %}{{ row(r, True) }}{% endfor %}
+{% endif %}
+{% endblock %}
+{% block scripts %}<script>
+document.addEventListener('seiten:counts', function () { if (!document.hidden) location.reload(); });
+</script>{% endblock %}

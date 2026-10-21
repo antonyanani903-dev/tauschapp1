@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<meta name="theme-color" content="#7393B3">
+<title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+<link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body
+  {% if current_user.is_authenticated %}
+  data-auth="1"
+  data-since-match="{{ nav.since.match }}"
+  data-since-message="{{ nav.since.message }}"
+  data-current-match="{% block current_match %}{% endblock %}"
+  data-notify-url="{{ url_for('api_notifications') }}"
+  {% endif %}>
+
+{% if current_user.is_authenticated %}
+<header>
+  <a class="brand" href="{{ url_for('discover') }}">{{ SITE_NAME[:5] }}<span>{{ SITE_NAME[5:] }}</span></a>
+  <a class="profile-link" href="{{ url_for('profile') }}">{{ current_user.name.split(' ')[0] }}</a>
+</header>
+{% endif %}
+
+<main{% if not current_user.is_authenticated %} class="full"{% endif %}>
+  <div class="main-inner">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-stack">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+
+  {% if IMPRESSUM_URL or PRIVACY_URL %}
+  <footer class="legal">
+    {% if IMPRESSUM_URL %}<a href="{{ IMPRESSUM_URL }}" target="_blank" rel="noopener">Impressum</a>{% endif %}
+    {% if PRIVACY_URL %}<a href="{{ PRIVACY_URL }}" target="_blank" rel="noopener">Datenschutz</a>{% endif %}
+  </footer>
+  {% endif %}
+  </div>
+</main>
+
+{% if current_user.is_authenticated %}
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<nav class="tabs">
+  <a href="{{ url_for('discover') }}" class="{{ 'active' if request.endpoint == 'discover' else '' }}">
+    <span class="ic">📖</span>Entdecken
+  </a>
+  <a href="{{ url_for('my_books') }}" class="{{ 'active' if request.endpoint in ['my_books', 'edit_book'] else '' }}">
+    <span class="ic">🗂️</span>Meine Bücher
+  </a>
+  <a href="{{ url_for('matches') }}" class="{{ 'active' if request.endpoint in ['matches', 'chat'] else '' }}">
+    <span class="ic">🤝<b class="badge" data-badge="total" {% if not nav.counts.total %}hidden{% endif %}>{{ nav.counts.total }}</b></span>Matches
+  </a>
+  <a href="{{ url_for('profile') }}" class="{{ 'active' if request.endpoint == 'profile' else '' }}">
+    <span class="ic">👤</span>Profil
+  </a>
+</nav>
+{% endif %}
+
+{% block scripts %}{% endblock %}
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

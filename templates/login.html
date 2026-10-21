@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Anmelden – {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<form class="auth-form" method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <h1>Anmelden</h1>
+  <label for="email">E-Mail</label>
+  <input id="email" type="email" name="email" value="{{ email or '' }}" required autofocus autocomplete="email">
+  <label for="password">Passwort</label>
+  <input id="password" type="password" name="password" required autocomplete="current-password">
+  <label class="check"><input type="checkbox" name="remember" value="yes" checked> Angemeldet bleiben</label>
+  <button type="submit">Anmelden</button>
+  <div class="auth-links">
+    <a href="{{ url_for('forgot_password') }}">Passwort vergessen?</a>
+    <a href="{{ url_for('register') }}">Neu hier? Registrieren</a>
+  </div>
+</form>
+{% endblock %}

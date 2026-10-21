@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: seitentausch-app
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 60"
+    healthCheckPath: /healthz
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: seitentausch-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      # --- optional, siehe README (Render fragt beim Sync nach den Werten; leer lassen ist ok) ---
+      - key: APP_BASE_URL        # z. B. https://tausch.deine-domain.de (fuer Links in E-Mails)
+        sync: false
+      - key: SITE_NAME
+        value: Seitentausch
+      - key: IMPRESSUM_URL
+        sync: false
+      - key: PRIVACY_URL
+        sync: false
+      - key: ADMIN_EMAIL         # bekommt Meldungen von Nutzern per E-Mail
+        sync: false
+      - key: GEO_CONTACT         # Kontakt-E-Mail fuer die Ortssuche (Nominatim-Nutzungsregeln)
+        sync: false
+      - key: MAIL_SERVER         # IONOS: smtp.ionos.de
+        sync: false
+      - key: MAIL_PORT           # 587
+        sync: false
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+
+databases:
+  - name: seitentausch-db
+    plan: free
+    databaseName: seitentausch
+    user: seitentausch

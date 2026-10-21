@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Entdecken – {{ SITE_NAME }}{% endblock %}
+{% block content %}
+
+<details class="filter-bar" {% if not current_user.has_location %}open{% endif %}>
+  <summary>
+    <span>📍</span>
+    {% if current_user.has_location %}
+      <span><strong>{{ current_user.location_label }}</strong> · {% if current_user.radius_km %}{{ current_user.radius_km }} km{% else %}überall{% endif %}</span>
+    {% else %}
+      <span>Standort festlegen</span>
+    {% endif %}
+    <span class="chev">▾</span>
+  </summary>
+  <form method="post" action="{{ url_for('save_location') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="row">
+      <div style="max-width:110px">
+        <label class="field" for="f-country">Land</label>
+        <select id="f-country" name="country">
+          {% for code, label in COUNTRIES.items() %}
+          <option value="{{ code }}" {{ 'selected' if current_user.country == code else '' }}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="field" for="f-loc">PLZ oder Ort</label>
+        <input id="f-loc" name="location" value="{{ current_user.location_label }}" placeholder="z. B. 80331 oder München">
+      </div>
+    </div>
+    <label class="field" for="f-radius">Umkreis</label>
+    <select id="f-radius" name="radius">
+      {% for r in RADIUS_CHOICES %}
+      <option value="{{ r }}" {{ 'selected' if current_user.radius_km == r else '' }}>{{ r }} km</option>
+      {% endfor %}
+      <option value="all" {{ 'selected' if not current_user.radius_km else '' }}>Überall</option>
+    </select>
+    <button type="submit">Übernehmen</button>
+  </form>
+</details>
+
+{% if my_active == 0 %}
+<div class="notice">💡 Du hast noch kein Buch eingestellt. Ein Match entsteht nur, wenn dir jemand etwas zurückgeben kann – <a href="{{ url_for('my_books') }}">lade jetzt ein Buch hoch</a>.</div>
+{% endif %}
+
+<div id="deck"
+     data-books='{{ books|tojson|forceescape }}'
+     data-more="{{ 1 if more else 0 }}"
+     data-swipe-url="{{ url_for('swipe', book_id=0, decision='like') }}">
+  <div class="stack" id="stack"></div>
+  <div class="swipe-btns" id="swipe-btns">
+    <button type="button" class="pass" id="btn-pass" aria-label="Überspringen">✕ Weiter</button>
+    <button type="button" class="like" id="btn-like" aria-label="Gefällt mir">♥ Gefällt mir</button>
+  </div>
+  <p class="hint">Ziehe die Karte nach rechts (gefällt) oder links (weiter) – oder nutze die Pfeiltasten.</p>
+</div>
+
+<div class="empty" id="empty" hidden>
+  <div class="big">📭</div>
+  {% if outside %}
+    <p>In deinem Umkreis ({{ current_user.radius_km }} km) gibt es gerade nichts Neues, aber {{ outside }} Buch{{ 'er' if outside != 1 else '' }} weiter weg.</p>
+    {% if next_radius %}
+    <form method="post" action="{{ url_for('save_location') }}" style="margin-top:16px">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="country" value="{{ current_user.country }}">
+      <input type="hidden" name="location" value="{{ current_user.location_label }}">
+      <input type="hidden" name="radius" value="{{ next_radius }}">
+      <button class="btn btn-primary" type="submit">Umkreis auf {{ next_radius }} km erweitern</button>
+    </form>
+    {% else %}
+    <form method="post" action="{{ url_for('save_location') }}" style="margin-top:16px">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="country" value="{{ current_user.country }}">
+      <input type="hidden" name="location" value="{{ current_user.location_label }}">
+      <input type="hidden" name="radius" value="all">
+      <button class="btn btn-primary" type="submit">Überall suchen</button>
+    </form>
+    {% endif %}
+  {% else %}
+    <p>Du hast alle aktuellen Bücher gesehen. Schau später wieder vorbei – wir melden uns, wenn es ein Match gibt.</p>
+  {% endif %}
+</div>
+
+<div class="overlay" id="match-overlay" hidden>
+  <div class="match-box">
+    <h2>Es ist ein <span>Match!</span></h2>
+    <p id="match-text"></p>
+    <div class="match-books">
+      <div class="mb"><div class="pic" id="mb-mine">📖</div><span id="mb-mine-t"></span></div>
+      <div class="swap">⇄</div>
+      <div class="mb"><div class="pic" id="mb-theirs">📖</div><span id="mb-theirs-t"></span></div>
+    </div>
+    <a class="btn btn-accent" id="match-chat" href="#">Nachricht schreiben</a>
+    <button class="btn btn-ghost" id="match-close" type="button">Weiter stöbern</button>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/discover.js') }}"></script>{% endblock %}
