@@ -564,7 +564,14 @@ def register_routes(app: Flask):
                     f"{link}\n\n"
                     f"Wenn du das nicht warst, ignoriere diese E-Mail einfach - dein Passwort bleibt unverändert.\n"
                 )
-                mailer.send_mail(user.email, f"Passwort zurücksetzen – {site}", text)
+                html = mailer.button_email(
+                    site, f"Hallo {user.name},",
+                    ["für dein Konto wurde ein neues Passwort angefordert. "
+                     "Klicke auf den Button, um ein neues Passwort zu setzen."],
+                    "Neues Passwort festlegen", link,
+                    ["Der Link ist 1 Stunde gültig und kann nur einmal benutzt werden.",
+                     "Wenn du das nicht warst, ignoriere diese E-Mail einfach. Dein Passwort bleibt unverändert."])
+                mailer.send_mail(user.email, f"Passwort zurücksetzen – {site}", text, html)
             if mailer.is_configured():
                 flash("Falls ein Konto mit dieser E-Mail existiert, haben wir dir einen Link zum "
                       "Zurücksetzen geschickt. Bitte prüfe auch den Spam-Ordner.", "info")
