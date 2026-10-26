@@ -26,6 +26,7 @@ E-Mail-Benachrichtigungen erreichen niemanden.
 """
 import logging
 import os
+import html as _html
 import json
 import smtplib
 import ssl
@@ -151,3 +152,38 @@ def send_mail(to: str, subject: str, text: str, html: str | None = None,
         threading.Thread(target=_send_now, args=(to, subject, text, html), daemon=True).start()
         return True
     return _send_now(to, subject, text, html)
+
+
+def button_email(site_name: str, greeting: str, paragraphs: list[str], button_label: str,
+                 url: str, footnotes: list[str] | None = None) -> str:
+    """HTML-Mail im Look der App: Text, ein Button, kleines Kleingedrucktes.
+
+    Mit Inline-Styles und Tabellen, weil Mailprogramme (Outlook, Yahoo, Gmail) kein
+    modernes CSS verstehen. Der Link steckt nur im Button, nicht als lange Zeile im Text.
+    """
+    e = _html.escape
+    paras = "".join(f'<p style="margin:0 0 14px;font-size:15px;line-height:1.55;color:#333333;">{e(t)}</p>'
+                    for t in paragraphs)
+    notes = "".join(f'<p style="margin:0 0 6px;font-size:12px;line-height:1.5;color:#6b6b6b;">{e(t)}</p>'
+                    for t in (footnotes or []))
+    brand_a, brand_b = e(site_name[:6]), e(site_name[6:])
+    return f"""<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f8f8f8;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;padding:24px 12px;">
+<tr><td align="center">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:10px;">
+    <tr><td style="padding:22px 28px 6px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:600;color:#0c4d77;">{brand_a}<span style="color:#ff7f50;">{brand_b}</span></td></tr>
+    <tr><td style="padding:12px 28px 4px;font-family:'Segoe UI',Arial,sans-serif;">
+      <p style="margin:0 0 14px;font-size:15px;color:#333333;">{e(greeting)}</p>
+      {paras}
+    </td></tr>
+    <tr><td align="center" style="padding:10px 28px 22px;">
+      <a href="{e(url, quote=True)}" style="display:inline-block;background:#ff7f50;color:#ffffff;text-decoration:none;font-family:'Segoe UI',Arial,sans-serif;font-size:15px;font-weight:600;padding:13px 30px;border-radius:5px;">{e(button_label)}</a>
+    </td></tr>
+    <tr><td style="padding:4px 28px 24px;font-family:'Segoe UI',Arial,sans-serif;border-top:1px solid #e0e0e0;">
+      <div style="padding-top:14px;">{notes}</div>
+    </td></tr>
+  </table>
+</td></tr></table>
+</body></html>"""
