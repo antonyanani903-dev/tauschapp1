@@ -136,7 +136,15 @@ def email_new_match(match: Match, recipient: User, base_url: str, site_name: str
         f"Du möchtest keine E-Mails mehr? Das kannst du in deinem Profil ausschalten:\n"
         f"{_link(base_url, '/profile')}\n"
     )
-    return mailer.send_mail(recipient.email, f"Neues Match auf {site_name} 🎉", text)
+    html = mailer.button_email(
+        site_name, f"Hallo {recipient.name},",
+        [f"gute Nachrichten: Du hast ein Match! {other.name} und du interessiert euch jeweils für ein Buch des anderen.",
+         f"Du gibst: {match.my_book(recipient.id).title}",
+         f"Du bekommst: {match.their_book(recipient.id).title}"],
+        "Nachricht schreiben", _link(base_url, f"/chat/{match.id}"),
+        ["Tipp: Triff dich für den Tausch an einem öffentlichen Ort.",
+         "E-Mails kannst du jederzeit in deinem Profil ausschalten."])
+    return mailer.send_mail(recipient.email, f"Neues Match auf {site_name} 🎉", text, html)
 
 
 def email_new_message(match: Match, message: Message, recipient: User, base_url: str,
@@ -166,7 +174,13 @@ def email_new_message(match: Match, message: Message, recipient: User, base_url:
         f"E-Mail-Benachrichtigungen kannst du in deinem Profil ausschalten:\n"
         f"{_link(base_url, '/profile')}\n"
     )
-    sent = mailer.send_mail(recipient.email, f"Neue Nachricht von {sender.name} auf {site_name}", text)
+    html = mailer.button_email(
+        site_name, f"Hallo {recipient.name},",
+        [f"{sender.name} hat dir geschrieben "
+         f"(Tausch: „{match.my_book(recipient.id).title}“ gegen „{match.their_book(recipient.id).title}“)."],
+        "Nachricht lesen", _link(base_url, f"/chat/{match.id}"),
+        ["E-Mail-Benachrichtigungen kannst du in deinem Profil ausschalten."])
+    sent = mailer.send_mail(recipient.email, f"Neue Nachricht von {sender.name} auf {site_name}", text, html)
     if sent:
         match.set_notified(recipient.id, now)
         db.session.commit()
