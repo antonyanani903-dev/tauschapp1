@@ -69,6 +69,9 @@ def _send_sendgrid(to: str, subject: str, text: str, html: str | None) -> bool:
         "personalizations": [{"to": [{"email": to}]}],
         "from": {"email": os.environ["MAIL_FROM"], "name": os.environ.get("MAIL_FROM_NAME", "Seitentausch")},
         "subject": subject, "content": content,
+        # keine Link-Umschreibung/Tracking: sonst werden Links ellenlang und wirken auf Yahoo/Gmail verdaechtig
+        "tracking_settings": {"click_tracking": {"enable": False, "enable_text": False},
+                              "open_tracking": {"enable": False}},
     }
     return _post_json("https://api.sendgrid.com/v3/mail/send",
                       {"Authorization": "Bearer " + os.environ["SENDGRID_API_KEY"]}, payload, "SendGrid", to)
