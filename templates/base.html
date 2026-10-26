@@ -20,7 +20,7 @@
 
 {% if current_user.is_authenticated %}
 <header>
-  <a class="brand" href="{{ url_for('discover') }}">{{ SITE_NAME[:5] }}<span>{{ SITE_NAME[5:] }}</span></a>
+  <a class="brand" href="{{ url_for('discover') }}">{{ SITE_NAME[:6] }}<span>{{ SITE_NAME[6:] }}</span></a>
   <a class="profile-link" href="{{ url_for('profile') }}">{{ current_user.name.split(' ')[0] }}</a>
 </header>
 {% endif %}
