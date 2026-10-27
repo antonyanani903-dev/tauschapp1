@@ -93,6 +93,10 @@ class BookImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.LargeBinary, nullable=False)
     mimetype = db.Column(db.String(50), nullable=False, default="image/jpeg")
+    # Zugehoeriges Buch und Reihenfolge (0 = Titelbild). Absichtlich kein Fremdschluessel:
+    # Book.image_id verweist schon auf diese Tabelle, ein zweiter Verweis waere ein Zyklus.
+    book_id = db.Column(db.Integer, index=True)
+    position = db.Column(db.Integer, nullable=False, server_default=sa.text("0"), default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
 
@@ -262,3 +266,4 @@ class GeoCache(db.Model):
     lat = db.Column(db.Float)
     lon = db.Column(db.Float)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
