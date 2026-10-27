@@ -15,14 +15,16 @@
   var pendingMatch = null;
 
   function cardHTML(b) {
-    var img = b.img
-      ? '<img src="' + S.esc(b.img) + '" alt="" draggable="false">'
+    var imgs = (b.imgs && b.imgs.length) ? b.imgs : (b.img ? [b.img] : []);
+    var img = imgs.length
+      ? '<img src="' + S.esc(imgs[0]) + '" alt="" draggable="false">'
       : '<div class="cover-placeholder">📖</div>';
+    var count = imgs.length > 1 ? '<span class="photo-count">1/' + imgs.length + '</span>' : '';
     var dist = b.distance ? '<span class="dist">📍 ' + S.esc(b.distance) + '</span>' : '';
     var desc = b.description ? '<p class="desc">' + S.esc(b.description) + '</p>' : '';
     var place = b.place ? ' · ' + S.esc(b.place) : '';
     return '<div class="stamp like">GEFÄLLT</div><div class="stamp pass">WEITER</div>' +
-      '<div class="cover">' + img + dist + '</div>' +
+      '<div class="cover' + (imgs.length > 1 ? ' multi' : '') + '">' + img + dist + count + '</div>' +
       '<div class="cover-info"><p class="title">' + S.esc(b.title) + '</p>' +
       '<p class="meta">' + S.esc(b.author) + '</p>' + desc +
       '<span class="tag">' + S.esc(b.condition) + '</span> ' +
@@ -48,6 +50,7 @@
     var top = document.createElement('div');
     top.className = 'card';
     top.innerHTML = cardHTML(books[0]);
+    top.dataset.idx = '0';
     stack.appendChild(top);
     attachDrag(top);
   }
@@ -86,6 +89,17 @@
     document.getElementById('btn-like').disabled = document.getElementById('btn-pass').disabled = false;
   }
 
+  function nextPhoto(card) {
+    var b = books[0];
+    var imgs = (b && b.imgs) || [];
+    if (imgs.length < 2) return;
+    var idx = (parseInt(card.dataset.idx || '0', 10) + 1) % imgs.length;
+    card.dataset.idx = String(idx);
+    card.querySelector('.cover img').src = imgs[idx];
+    var c = card.querySelector('.photo-count');
+    if (c) c.textContent = (idx + 1) + '/' + imgs.length;
+  }
+
   // ---------- Ziehen mit Finger/Maus ----------
   function attachDrag(card) {
     var startX = 0, startY = 0, dx = 0, active = false, horizontal = null;
@@ -113,6 +127,7 @@
       if (!active) return;
       active = false;
       card.classList.remove('dragging');
+      if (horizontal === null) { nextPhoto(card); return; }   // nur getippt: naechstes Foto
       if (horizontal && Math.abs(dx) > 110) { decide(dx > 0 ? 'like' : 'skip'); return; }
       card.style.transform = '';
       likeStamp.style.opacity = passStamp.style.opacity = 0;
