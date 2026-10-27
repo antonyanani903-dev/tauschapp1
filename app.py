@@ -126,11 +126,49 @@ def short_when(dt) -> str:
     return local.strftime("%d.%m.")
 
 
+MAX_IMAGES = 5
+
+
+def gallery_ids(book):
+    """IDs aller Fotos eines Buchs in Anzeige-Reihenfolge (Titelbild zuerst)."""
+    ids = [r[0] for r in db.session.query(BookImage.id).filter(BookImage.book_id == book.id)
+           .order_by(BookImage.position, BookImage.id).all()]
+    if book.image_id and book.image_id not in ids:   # Altbestand: Einzelfoto ohne book_id
+        ids.insert(0, book.image_id)
+    return ids
+
+
+def gallery(book):
+    return [{"id": i, "url": url_for("image_file", image_id=i)} for i in gallery_ids(book)]
+
+
+def apply_gallery(book, ordered_ids):
+    """Setzt Reihenfolge/Titelbild eines Buchs. ordered_ids muessen zu diesem Buch gehoeren."""
+    for pos, image_id in enumerate(ordered_ids):
+        BookImage.query.filter_by(id=image_id).update({"book_id": book.id, "position": pos})
+    book.image_id = ordered_ids[0] if ordered_ids else None
+    if ordered_ids:
+        book.image_filename = None
+
+
+def read_new_images():
+    """Alle neu hochgeladenen Fotos aus dem Formular (Feld 'images', Altfeld 'image')."""
+    files = [f for f in request.files.getlist("images") + request.files.getlist("image") if f and f.filename]
+    return [BookImage(data=process_upload(f), mimetype="image/jpeg") for f in files]
+
+
+def delete_book_images(book_ids, extra_image_ids=()):
+    if book_ids:
+        BookImage.query.filter(BookImage.book_id.in_(book_ids)).delete(synchronize_session=False)
+    if extra_image_ids:
+        BookImage.query.filter(BookImage.id.in_(list(extra_image_ids))).delete(synchronize_session=False)
+
+
 def book_img_url(book):
     if book is None:
         return None
     if book.image_id:
-        return url_for("book_image", book_id=book.id, v=book.image_id)
+        return url_for("image_file", image_id=book.image_id)
     if book.image_filename:
         return url_for("static", filename="uploads/" + book.image_filename)
     return None
@@ -141,6 +179,7 @@ def serialize_book(book):
         "id": book.id, "title": book.title, "author": book.author,
         "condition": book.condition, "description": book.description or "",
         "img": book_img_url(book),
+        "imgs": [g["url"] for g in gallery(book)],
         "distance": getattr(book, "distance_text", ""),
         "owner": book.owner.name.split(" ")[0],
         "place": book.owner.city or "",
@@ -314,8 +353,7 @@ def purge_user(uid: int):
     Block.query.filter(or_(Block.blocker_id == uid, Block.blocked_id == uid)).delete(synchronize_session=False)
     Report.query.filter(or_(Report.reporter_id == uid, Report.reported_id == uid)).delete(synchronize_session=False)
     Book.query.filter_by(owner_id=uid).delete(synchronize_session=False)
-    if image_ids:
-        BookImage.query.filter(BookImage.id.in_(image_ids)).delete(synchronize_session=False)
+    delete_book_images(book_ids, image_ids)
     User.query.filter_by(id=uid).delete(synchronize_session=False)
     db.session.commit()
 
@@ -350,7 +388,7 @@ def create_app(test_config=None):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"pool_pre_ping": True}  # tote DB-Verbindungen erkennen
 
-    app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024  # Handyfotos bis 8 MB
+    app.config["MAX_CONTENT_LENGTH"] = 30 * 1024 * 1024  # bis zu 5 Handyfotos
     app.config["WTF_CSRF_ENABLED"] = os.environ.get("WTF_CSRF_ENABLED", "1") != "0"
     app.config["WTF_CSRF_TIME_LIMIT"] = None  # Token gilt so lange wie die Sitzung
     app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -441,7 +479,7 @@ def register_hooks(app: Flask):
 
     @app.errorhandler(RequestEntityTooLarge)
     def too_large(e):
-        flash("Die Datei ist zu groß (maximal 8 MB).", "error")
+        flash("Die Fotos sind zusammen zu groß (maximal 30 MB). Wähle weniger oder kleinere Fotos.", "error")
         return redirect(request.referrer or url_for("my_books"))
 
     @app.errorhandler(429)
@@ -703,21 +741,21 @@ def register_routes(app: Flask):
             flash(error, "error")
             return redirect(url_for("my_books"))
 
-        image = None
-        file = request.files.get("image")
-        if file and file.filename:
-            try:
-                image = BookImage(data=process_upload(file), mimetype="image/jpeg")
-            except ImageError as exc:
-                flash(str(exc), "error")
-                return redirect(url_for("my_books"))
+        try:
+            images = read_new_images()
+            if len(images) > MAX_IMAGES:
+                raise ImageError(f"Du kannst höchstens {MAX_IMAGES} Fotos pro Buch hochladen.")
+        except ImageError as exc:
+            flash(str(exc), "error")
+            return redirect(url_for("my_books"))
 
         book = Book(owner_id=current_user.id, **data)
-        if image:
-            db.session.add(image)
-            db.session.flush()
-            book.image_id = image.id
         db.session.add(book)
+        db.session.flush()
+        for img in images:
+            db.session.add(img)
+        db.session.flush()
+        apply_gallery(book, [img.id for img in images])
         db.session.commit()
         flash(f"„{book.title}“ wurde hochgeladen.", "success")
         return redirect(url_for("my_books"))
@@ -737,31 +775,36 @@ def register_routes(app: Flask):
             if error:
                 flash(error, "error")
                 return render_template("edit_book.html", book=book), 400
-            new_image = None
-            file = request.files.get("image")
-            if file and file.filename:
-                try:
-                    new_image = BookImage(data=process_upload(file), mimetype="image/jpeg")
-                except ImageError as exc:
-                    flash(str(exc), "error")
-                    return render_template("edit_book.html", book=book), 400
+            current = gallery_ids(book)
+            remove = {int(x) for x in request.form.getlist("remove_image_ids") if x.isdigit()} & set(current)
+            remaining = [i for i in current if i not in remove]
+            cover = request.form.get("cover_image_id", type=int)
+            if cover in remaining:
+                remaining.remove(cover)
+                remaining.insert(0, cover)
+            try:
+                new_images = read_new_images()
+                if len(remaining) + len(new_images) > MAX_IMAGES:
+                    raise ImageError(f"Du kannst höchstens {MAX_IMAGES} Fotos pro Buch haben "
+                                     f"(aktuell {len(remaining)}).")
+            except ImageError as exc:
+                flash(str(exc), "error")
+                return render_template("edit_book.html", book=book, photos=gallery(book)), 400
 
-            old_image_id = book.image_id
             for key, value in data.items():
                 setattr(book, key, value)
-            if new_image:
-                db.session.add(new_image)
-                db.session.flush()
-                book.image_id, book.image_filename = new_image.id, None
-            elif request.form.get("remove_image") == "yes":
-                book.image_id = book.image_filename = None
+            for img in new_images:
+                db.session.add(img)
             db.session.flush()
-            if old_image_id and old_image_id != book.image_id:
-                BookImage.query.filter_by(id=old_image_id).delete(synchronize_session=False)
+            apply_gallery(book, remaining + [img.id for img in new_images])
+            if remove:
+                BookImage.query.filter(BookImage.id.in_(remove)).delete(synchronize_session=False)
+                if not remaining and not new_images:
+                    book.image_id = book.image_filename = None
             db.session.commit()
             flash("Änderungen gespeichert.", "success")
             return redirect(url_for("my_books"))
-        return render_template("edit_book.html", book=book)
+        return render_template("edit_book.html", book=book, photos=gallery(book))
 
     @app.route("/books/<int:book_id>/toggle", methods=["POST"])
     @login_required
@@ -787,13 +830,22 @@ def register_routes(app: Flask):
             book.deleted_at, book.is_active = datetime.utcnow(), False
         else:
             image_id = book.image_id
+            book_pk = book.id
             db.session.delete(book)
             db.session.flush()
-            if image_id:
-                BookImage.query.filter_by(id=image_id).delete(synchronize_session=False)
+            delete_book_images([book_pk], [image_id] if image_id else [])
         db.session.commit()
         flash("Buch entfernt.", "success")
         return redirect(url_for("my_books"))
+
+    @app.route("/media/image/<int:image_id>")
+    @login_required
+    def image_file(image_id):
+        image = db.session.get(BookImage, image_id)
+        if image is None:
+            abort(404)
+        return Response(image.data, mimetype=image.mimetype,
+                        headers={"Cache-Control": "private, max-age=604800, immutable"})
 
     @app.route("/media/book/<int:book_id>")
     @login_required
