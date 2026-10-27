@@ -55,6 +55,43 @@
     if (e.persisted) document.querySelectorAll('button[type=submit]').forEach(function (b) { b.disabled = false; });
   });
 
+  // ---------- Fotos vor dem Hochladen verkleinern (spart Datenvolumen, vermeidet "zu gross") ----------
+  function shrink(file) {
+    return new Promise(function (resolve) {
+      if (!/^image\/(jpeg|png|webp)$/.test(file.type) || !window.createImageBitmap) return resolve(file);
+      createImageBitmap(file, { imageOrientation: 'from-image' }).then(function (bmp) {
+        var max = 1600, scale = Math.min(1, max / Math.max(bmp.width, bmp.height));
+        if (scale === 1 && file.size < 1.2 * 1024 * 1024) return resolve(file);
+        var c = document.createElement('canvas');
+        c.width = Math.round(bmp.width * scale); c.height = Math.round(bmp.height * scale);
+        c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+        c.toBlob(function (blob) {
+          if (!blob || blob.size >= file.size) return resolve(file);
+          resolve(new File([blob], file.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' }));
+        }, 'image/jpeg', 0.85);
+      }).catch(function () { resolve(file); });
+    });
+  }
+  document.querySelectorAll('input[type=file][data-compress]').forEach(function (input) {
+    var summary = input.parentElement.querySelector('[data-file-summary]');
+    input.addEventListener('change', function () {
+      var max = parseInt(input.dataset.max || '5', 10);
+      var files = Array.prototype.slice.call(input.files);
+      if (files.length > max) {
+        files = files.slice(0, max);
+        if (summary) summary.textContent = 'Es werden nur die ersten ' + max + ' Fotos verwendet.';
+      } else if (summary) { summary.textContent = files.length ? files.length + ' Foto' + (files.length > 1 ? 's' : '') + ' ausgewÃ¤hlt' : ''; }
+      if (!files.length || !window.DataTransfer) return;
+      Promise.all(files.map(shrink)).then(function (small) {
+        try {
+          var dt = new DataTransfer();
+          small.forEach(function (f) { dt.items.add(f); });
+          input.files = dt.files;
+        } catch (e) { /* Browser erlaubt das nicht: Originale werden hochgeladen */ }
+      });
+    });
+  });
+
   // ---------- Toasts ----------
   Seiten.toast = function (opts) {
     var box = document.getElementById('toasts');
