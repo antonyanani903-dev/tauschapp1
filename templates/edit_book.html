@@ -4,7 +4,6 @@
 <h1 class="page-title">Buch bearbeiten</h1>
 <form class="addbook" method="post" enctype="multipart/form-data">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-  {% if book_img(book) %}<img class="edit-preview" src="{{ book_img(book) }}" alt="">{% endif %}
   <label for="title">Titel</label>
   <input id="title" name="title" value="{{ book.title }}" required maxlength="255">
   <label for="author">Autor/in</label>
@@ -15,9 +14,21 @@
   </select>
   <label for="description">Beschreibung</label>
   <textarea id="description" name="description" maxlength="1000" rows="3">{{ book.description or '' }}</textarea>
-  <label for="image">{% if book.has_image %}Neues Foto <span class="optional">(ersetzt das bisherige)</span>{% else %}Foto{% endif %}</label>
-  <input id="image" type="file" name="image" accept="image/*">
-  {% if book.has_image %}<label class="check"><input type="checkbox" name="remove_image" value="yes"> Foto entfernen</label>{% endif %}
+  {% if photos %}
+  <label>Fotos <span class="optional">(Titelbild = erstes Foto)</span></label>
+  <div class="gallery">
+    {% for ph in photos %}
+    <div class="g-item">
+      <img src="{{ ph.url }}" alt="">
+      <label class="g-opt"><input type="radio" name="cover_image_id" value="{{ ph.id }}" {{ 'checked' if loop.first else '' }}> Titelbild</label>
+      <label class="g-opt danger"><input type="checkbox" name="remove_image_ids" value="{{ ph.id }}"> Entfernen</label>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  <label for="images">{% if photos %}Weitere Fotos hinzufügen{% else %}Fotos{% endif %} <span class="optional">(insgesamt bis zu 5)</span></label>
+  <input id="images" type="file" name="images" accept="image/*" multiple data-compress data-max="{{ 5 - photos|length if photos else 5 }}">
+  <p class="footnote" data-file-summary></p>
   <button type="submit">Speichern</button>
   <p style="text-align:center;margin-top:12px"><a class="link-btn" href="{{ url_for('my_books') }}">Abbrechen</a></p>
 </form>
