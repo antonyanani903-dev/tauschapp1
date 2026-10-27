@@ -16,8 +16,9 @@
   </select>
   <label for="description">Beschreibung <span class="optional">(optional)</span></label>
   <textarea id="description" name="description" maxlength="1000" rows="2" placeholder="z. B. Illustrator, Ausgabe, Gebrauchsspuren"></textarea>
-  <label for="image">Foto <span class="optional">(optional, JPG/PNG/WebP)</span></label>
-  <input id="image" type="file" name="image" accept="image/*">
+  <label for="images">Fotos <span class="optional">(optional, bis zu 5 – das erste ist das Titelbild)</span></label>
+  <input id="images" type="file" name="images" accept="image/*" multiple data-compress data-max="5">
+  <p class="footnote" data-file-summary></p>
   <button type="submit">Hochladen</button>
 </form>
 
