@@ -355,3 +355,13 @@ nav.tabs a .ic{position:relative;}
 @media (max-width:420px){
   .match-box h2{font-size:36px;}
 }
+
+/* Mehrere Fotos */
+.gallery{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:6px 0 4px;}
+.g-item{display:flex; flex-direction:column; gap:3px;}
+.g-item img{width:100%; aspect-ratio:3/4; object-fit:cover; border-radius:6px; background:var(--surface);}
+.g-opt{display:flex !important; align-items:center; gap:5px; margin:0 !important; font-size:12px !important; color:var(--muted) !important;}
+.g-opt input{width:auto !important; margin:0;}
+.g-opt.danger{color:var(--danger) !important;}
+.photo-count{position:absolute; right:10px; bottom:10px; background:rgba(0,0,0,.55); color:#fff; padding:3px 10px; border-radius:14px; font-size:12px; font-family:var(--font-body);}
+.cover.multi{cursor:pointer;}
