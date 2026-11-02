@@ -19,7 +19,7 @@
 
 {% if current_user.is_authenticated %}
 <header>
-  <a class="brand" href="{{ url_for('discover') }}"><img class="brand-mark" src="{{ url_for('static', filename='images/ibk-mark.png') }}" alt="" width="24" height="26"><span class="brand-text">{{ SITE_NAME[:6] }}<span>{{ SITE_NAME[6:] }}</span></span></a>
+  <a class="brand" href="{{ url_for('discover') }}"><img class="brand-mark" src="{{ url_for('static', filename='images/ibk-mark.png') }}" alt="" width="24" height="26"></a>
   <a class="profile-link" href="{{ url_for('profile') }}">{{ current_user.name.split(' ')[0] }}</a>
 </header>
 {% endif %}
