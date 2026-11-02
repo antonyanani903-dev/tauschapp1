@@ -10,7 +10,7 @@ WICHTIG: Kostenlose Render-Web-Services blockieren ausgehende SMTP-Verbindungen
   Variante A (empfohlen auf Render Free): Brevo
     BREVO_API_KEY   API-Key (Brevo -> SMTP & API -> API Keys)
     MAIL_FROM       bei Brevo bestaetigte Absenderadresse
-    MAIL_FROM_NAME  optional, Standard = Seitentausch
+    MAIL_FROM_NAME  optional, Standard = IBK Büchertausch
 
   Variante B (nur wo SMTP erlaubt ist, z. B. bezahlter Plan / eigener Server):
   MAIL_SERVER     z. B. smtp.ionos.de
@@ -18,7 +18,7 @@ WICHTIG: Kostenlose Render-Web-Services blockieren ausgehende SMTP-Verbindungen
   MAIL_USERNAME   vollstaendige Absenderadresse, z. B. tausch@deine-domain.de
   MAIL_PASSWORD   Passwort dieses Postfachs
   MAIL_FROM       optional, Standard = MAIL_USERNAME
-  MAIL_FROM_NAME  optional, Standard = Seitentausch
+  MAIL_FROM_NAME  optional, Standard = IBK Büchertausch
 
 Ist nichts konfiguriert, wird die Mail nur ins Server-Log geschrieben.
 Dann funktioniert die App weiter, aber "Passwort vergessen" und
@@ -67,7 +67,7 @@ def _send_sendgrid(to: str, subject: str, text: str, html: str | None) -> bool:
         content.append({"type": "text/html", "value": html})
     payload = {
         "personalizations": [{"to": [{"email": to}]}],
-        "from": {"email": os.environ["MAIL_FROM"], "name": os.environ.get("MAIL_FROM_NAME", "Seitentausch")},
+        "from": {"email": os.environ["MAIL_FROM"], "name": os.environ.get("MAIL_FROM_NAME", "IBK Büchertausch")},
         "subject": subject, "content": content,
         # keine Link-Umschreibung/Tracking: sonst werden Links ellenlang und wirken auf Yahoo/Gmail verdaechtig
         "tracking_settings": {"click_tracking": {"enable": False, "enable_text": False},
@@ -85,7 +85,7 @@ def is_configured() -> bool:
 
 def _send_brevo(to: str, subject: str, text: str, html: str | None) -> bool:
     payload = {
-        "sender": {"name": os.environ.get("MAIL_FROM_NAME", "Seitentausch"), "email": os.environ["MAIL_FROM"]},
+        "sender": {"name": os.environ.get("MAIL_FROM_NAME", "IBK Büchertausch"), "email": os.environ["MAIL_FROM"]},
         "to": [{"email": to}],
         "subject": subject,
         "textContent": text,
@@ -117,7 +117,7 @@ def _send_now(to: str, subject: str, text: str, html: str | None) -> bool:
     user = os.environ["MAIL_USERNAME"]
     password = os.environ["MAIL_PASSWORD"]
     sender = os.environ.get("MAIL_FROM") or user
-    name = os.environ.get("MAIL_FROM_NAME", "Seitentausch")
+    name = os.environ.get("MAIL_FROM_NAME", "IBK Büchertausch")
 
     msg = EmailMessage()
     msg["Subject"] = subject
@@ -169,7 +169,8 @@ def button_email(site_name: str, greeting: str, paragraphs: list[str], button_la
                     for t in paragraphs)
     notes = "".join(f'<p style="margin:0 0 6px;font-size:12px;line-height:1.5;color:#6b6b6b;">{e(t)}</p>'
                     for t in (footnotes or []))
-    brand_a, brand_b = e(site_name[:6]), e(site_name[6:])
+    first, _, rest = site_name.partition(" ")
+    brand_a, brand_b = (e(first + " "), e(rest)) if rest else (e(site_name[:6]), e(site_name[6:]))
     parent = os.environ.get("PARENT_URL", "https://ibk-bilderbuch.de")
     return f"""<!DOCTYPE html>
 <html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -189,11 +190,11 @@ def button_email(site_name: str, greeting: str, paragraphs: list[str], button_la
       {paras}
     </td></tr>
     <tr><td align="center" style="padding:10px 28px 22px;">
-      <a href="{e(url, quote=True)}" style="display:inline-block;background:#af385b;color:#ffffff;text-decoration:none;font-family:'Segoe UI',Arial,sans-serif;font-size:15px;font-weight:600;padding:13px 30px;border-radius:5px;">{e(button_label)}</a>
+      <a href="{e(url, quote=True)}" style="display:inline-block;background:#3b82c4;color:#ffffff;text-decoration:none;font-family:'Segoe UI',Arial,sans-serif;font-size:15px;font-weight:600;padding:13px 30px;border-radius:5px;">{e(button_label)}</a>
     </td></tr>
     <tr><td style="padding:4px 28px 24px;font-family:'Segoe UI',Arial,sans-serif;border-top:1px solid #e0e0e0;">
       <div style="padding-top:14px;">{notes}
-        <p style="margin:10px 0 0;font-size:12px;line-height:1.5;color:#6b6b6b;">Ein Projekt von <a href="{e(parent, quote=True)}" style="color:#3f5a39;text-decoration:underline;">IBK</a> – Buchhandlung für Illustration und Bilderbücher</p>
+        <p style="margin:10px 0 0;font-size:12px;line-height:1.5;color:#6b6b6b;">Ein Projekt von <a href="{e(parent, quote=True)}" style="color:#3f5a39;text-decoration:underline;">IBK</a></p>
       </div>
     </td></tr>
   </table>
