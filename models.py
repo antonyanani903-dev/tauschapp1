@@ -136,6 +136,9 @@ class Swipe(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     book_id = db.Column(db.Integer, db.ForeignKey("book.id"), nullable=False)
     liked = db.Column(db.Boolean, nullable=False)
+    # "Noch eine Chance": uebersprungene Buecher bleiben dort sichtbar, bis man sie
+    # endgueltig aussortiert (dismissed=True) oder doch liked.
+    dismissed = db.Column(db.Boolean, nullable=False, server_default=sa.false(), default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     user = db.relationship("User", foreign_keys=[user_id])
@@ -266,4 +269,3 @@ class GeoCache(db.Model):
     lat = db.Column(db.Float)
     lon = db.Column(db.Float)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-
