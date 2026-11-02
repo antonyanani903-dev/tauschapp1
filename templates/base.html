@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<meta name="theme-color" content="#7393B3">
+<meta name="theme-color" content="#58774e">
 <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
 <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -20,7 +20,7 @@
 
 {% if current_user.is_authenticated %}
 <header>
-  <a class="brand" href="{{ url_for('discover') }}">{{ SITE_NAME[:6] }}<span>{{ SITE_NAME[6:] }}</span></a>
+  <a class="brand" href="{{ url_for('discover') }}"><img class="brand-mark" src="{{ url_for('static', filename='images/ibk-mark.png') }}" alt="" width="24" height="26"><span class="brand-text">{{ SITE_NAME[:6] }}<span>{{ SITE_NAME[6:] }}</span></span></a>
   <a class="profile-link" href="{{ url_for('profile') }}">{{ current_user.name.split(' ')[0] }}</a>
 </header>
 {% endif %}
@@ -39,12 +39,20 @@
 
   {% block content %}{% endblock %}
 
-  {% if IMPRESSUM_URL or PRIVACY_URL %}
   <footer class="legal">
-    {% if IMPRESSUM_URL %}<a href="{{ IMPRESSUM_URL }}" target="_blank" rel="noopener">Impressum</a>{% endif %}
-    {% if PRIVACY_URL %}<a href="{{ PRIVACY_URL }}" target="_blank" rel="noopener">Datenschutz</a>{% endif %}
+    {% if request.endpoint != 'index' %}
+    <a class="parent-link" href="{{ PARENT_URL }}" target="_blank" rel="noopener">
+      <img src="{{ url_for('static', filename='images/ibk-mark.png') }}" alt="" width="22" height="24">
+      <span>Ein Projekt von <b>{{ PARENT_NAME }}</b> · Buchhandlung für Illustration und Bilderbücher</span>
+    </a>
+    {% endif %}
+    {% if IMPRESSUM_URL or PRIVACY_URL %}
+    <div class="legal-links">
+      {% if IMPRESSUM_URL %}<a href="{{ IMPRESSUM_URL }}" target="_blank" rel="noopener">Impressum</a>{% endif %}
+      {% if PRIVACY_URL %}<a href="{{ PRIVACY_URL }}" target="_blank" rel="noopener">Datenschutz</a>{% endif %}
+    </div>
+    {% endif %}
   </footer>
-  {% endif %}
   </div>
 </main>
 
