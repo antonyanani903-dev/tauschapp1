@@ -296,6 +296,22 @@ def build_feed(user):
     return feed, outside
 
 
+def skipped_query(user):
+    """Von user uebersprungene Buecher, die noch eine zweite Chance verdienen."""
+    q = (
+        db.session.query(Swipe).join(Book, Swipe.book_id == Book.id)
+        .options(joinedload(Swipe.book).joinedload(Book.owner))
+        .filter(
+            Swipe.user_id == user.id, Swipe.liked.is_(False), Swipe.dismissed.is_(False),
+            Book.is_active.is_(True), Book.deleted_at.is_(None),
+        )
+    )
+    hidden = notifications.blocked_ids(user.id)
+    if hidden:
+        q = q.filter(~Book.owner_id.in_(hidden))
+    return q
+
+
 def try_create_match(me, liked_book):
     """Legt ein Match an, wenn der Besitzer des gelikten Buchs ein Buch von mir geliked hat."""
     owner_id = liked_book.owner_id
@@ -448,6 +464,8 @@ def register_hooks(app: Flask):
     def inject_globals():
         ctx = {
             "SITE_NAME": os.environ.get("SITE_NAME", "Seitentausch"),
+            "PARENT_URL": os.environ.get("PARENT_URL", "https://ibk-bilderbuch.de"),
+            "PARENT_NAME": os.environ.get("PARENT_NAME", "IBK"),
             "IMPRESSUM_URL": os.environ.get("IMPRESSUM_URL", ""),
             "PRIVACY_URL": os.environ.get("PRIVACY_URL", ""),
             "COUNTRIES": geo.COUNTRIES,
@@ -650,7 +668,42 @@ def register_routes(app: Flask):
         return render_template(
             "discover.html", books=[serialize_book(b) for b in batch], more=len(feed) > len(batch),
             outside=outside, my_active=my_active, next_radius=next_radius,
+            skipped=skipped_query(current_user).count(),
         )
+
+    @app.route("/second-chance")
+    @login_required
+    def second_chance():
+        rows = skipped_query(current_user).order_by(Swipe.created_at.desc()).limit(200).all()
+        items = []
+        for sw in rows:
+            km = distance_between(current_user, sw.book.owner)
+            items.append({"book": sw.book, "owner": sw.book.owner,
+                          "distance": geo.format_distance(km) if km is not None else ""})
+        return render_template("second_chance.html", items=items)
+
+    @app.route("/second-chance/<int:book_id>/dismiss", methods=["POST"])
+    @login_required
+    def dismiss_book(book_id):
+        sw = Swipe.query.filter_by(user_id=current_user.id, book_id=book_id, liked=False).first()
+        if sw is None:
+            abort(404)
+        sw.dismissed = True
+        db.session.commit()
+        flash("Das Buch wird dir nicht mehr angezeigt.", "success")
+        return redirect(url_for("second_chance"))
+
+    @app.route("/second-chance/reset", methods=["POST"])
+    @login_required
+    def reset_skipped():
+        ids = [sw.book_id for sw in skipped_query(current_user).all()]
+        if ids:
+            Swipe.query.filter(Swipe.user_id == current_user.id, Swipe.book_id.in_(ids),
+                               Swipe.liked.is_(False)).delete(synchronize_session=False)
+            db.session.commit()
+        flash(f"{len(ids)} Buch{'er' if len(ids) != 1 else ''} wieder in deinem Stapel." if ids
+              else "Es gibt nichts zurückzulegen.", "success")
+        return redirect(url_for("discover"))
 
     @app.route("/location", methods=["POST"])
     @login_required
@@ -684,6 +737,7 @@ def register_routes(app: Flask):
             existing = Swipe(user_id=current_user.id, book_id=book_id)
             db.session.add(existing)
         existing.liked = decision == "like"
+        existing.dismissed = False
         existing.created_at = datetime.utcnow()
         db.session.commit()
 
@@ -705,7 +759,7 @@ def register_routes(app: Flask):
         if match:
             flash("Es ist ein Match! Ihr könnt jetzt chatten.", "success")
             return redirect(url_for("chat", match_id=match.id))
-        return redirect(url_for("discover"))
+        return redirect(safe_next(request.form.get("next")) or url_for("discover"))
 
     # ------------------------------------------------------------ Meine Buecher
 
