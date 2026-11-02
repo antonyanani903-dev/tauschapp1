@@ -56,7 +56,6 @@
 </div>
 
 <div class="empty" id="empty" hidden>
-  <div class="big">📭</div>
   {% if outside %}
     <p>In deinem Umkreis ({{ current_user.radius_km }} km) gibt es gerade nichts Neues, aber {{ outside }} Buch{{ 'er' if outside != 1 else '' }} weiter weg.</p>
     {% if next_radius %}
