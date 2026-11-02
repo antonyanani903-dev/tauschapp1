@@ -170,22 +170,31 @@ def button_email(site_name: str, greeting: str, paragraphs: list[str], button_la
     notes = "".join(f'<p style="margin:0 0 6px;font-size:12px;line-height:1.5;color:#6b6b6b;">{e(t)}</p>'
                     for t in (footnotes or []))
     brand_a, brand_b = e(site_name[:6]), e(site_name[6:])
+    parent = os.environ.get("PARENT_URL", "https://ibk-bilderbuch.de")
     return f"""<!DOCTYPE html>
 <html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#f8f8f8;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;padding:24px 12px;">
 <tr><td align="center">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:10px;">
-    <tr><td style="padding:22px 28px 6px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:600;color:#0c4d77;">{brand_a}<span style="color:#ff7f50;">{brand_b}</span></td></tr>
+    <tr><td style="font-size:0;line-height:0;border-radius:10px 10px 0 0;overflow:hidden;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td width="50%" height="5" bgcolor="#7a9870" style="height:5px;line-height:5px;font-size:0;">&nbsp;</td>
+        <td width="50%" height="5" bgcolor="#af385b" style="height:5px;line-height:5px;font-size:0;">&nbsp;</td>
+      </tr></table>
+    </td></tr>
+    <tr><td style="padding:22px 28px 6px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:600;color:#3f5a39;">{brand_a}<span style="color:#af385b;">{brand_b}</span></td></tr>
     <tr><td style="padding:12px 28px 4px;font-family:'Segoe UI',Arial,sans-serif;">
       <p style="margin:0 0 14px;font-size:15px;color:#333333;">{e(greeting)}</p>
       {paras}
     </td></tr>
     <tr><td align="center" style="padding:10px 28px 22px;">
-      <a href="{e(url, quote=True)}" style="display:inline-block;background:#ff7f50;color:#ffffff;text-decoration:none;font-family:'Segoe UI',Arial,sans-serif;font-size:15px;font-weight:600;padding:13px 30px;border-radius:5px;">{e(button_label)}</a>
+      <a href="{e(url, quote=True)}" style="display:inline-block;background:#af385b;color:#ffffff;text-decoration:none;font-family:'Segoe UI',Arial,sans-serif;font-size:15px;font-weight:600;padding:13px 30px;border-radius:5px;">{e(button_label)}</a>
     </td></tr>
     <tr><td style="padding:4px 28px 24px;font-family:'Segoe UI',Arial,sans-serif;border-top:1px solid #e0e0e0;">
-      <div style="padding-top:14px;">{notes}</div>
+      <div style="padding-top:14px;">{notes}
+        <p style="margin:10px 0 0;font-size:12px;line-height:1.5;color:#6b6b6b;">Ein Projekt von <a href="{e(parent, quote=True)}" style="color:#3f5a39;text-decoration:underline;">IBK</a> – Buchhandlung für Illustration und Bilderbücher</p>
+      </div>
     </td></tr>
   </table>
 </td></tr></table>
