@@ -20,7 +20,7 @@
 
 {% if current_user.is_authenticated %}
 <header>
-  <a class="brand" href="{{ url_for('discover') }}"><img class="brand-mark" src="{{ url_for('static', filename='images/ibk-mark.png') }}" alt="" width="24" height="26">{% set _name = SITE_NAME.split(' ', 1) %}<span class="brand-text">{% if _name|length > 1 %}{{ _name[0] }} <span>{{ _name[1] }}</span>{% else %}{{ SITE_NAME[:6] }}<span>{{ SITE_NAME[6:] }}</span>{% endif %}</span></a>
+  <a class="brand" href="{{ url_for('discover') }}"><img class="brand-mark" src="{{ url_for('static', filename='images/ibk-mark.png') }}" alt="" width="24" height="26"></a>
   <button class="burger" id="burger" type="button" aria-label="Menü" aria-expanded="false" aria-controls="menu">
     <span class="bars"><i></i><i></i><i></i></span>
     <b class="badge" data-badge="total" {% if not nav.counts.total %}hidden{% endif %}>{{ nav.counts.total }}</b>
