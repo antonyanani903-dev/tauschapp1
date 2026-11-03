@@ -36,7 +36,6 @@ header{
 .brand{font-family:var(--font-heading); font-size:24px; font-weight:600; color:var(--color-secondary); display:inline-flex; align-items:center; gap:9px;}
 .brand-mark{height:26px; width:auto; display:block;}
 header{position:sticky;}
-header::after{content:""; position:absolute; left:0; right:0; bottom:0; height:3px; background:linear-gradient(90deg,var(--brand-green) 50%,var(--brand-rose) 50%);}
 .brand-text{color:var(--color-secondary);}
 .brand-text span{color:var(--accent-ink);}
 .profile-link{font-size:13px; color:var(--muted); font-weight:500; font-family:var(--font-body);}
@@ -308,8 +307,9 @@ form.addbook button:hover{background:var(--btn-blue-hover);}
 .chat-menu{position:relative;}
 .chat-menu summary{list-style:none; cursor:pointer; font-size:22px; padding:2px 8px; color:var(--muted);}
 .chat-menu summary::-webkit-details-marker{display:none;}
-.chat-menu .menu{position:absolute; right:0; top:100%; z-index:20; background:var(--white); border:1px solid var(--card-border); border-radius:8px; box-shadow:0 6px 16px rgba(0,0,0,.14); min-width:230px; padding:6px; font-family:var(--font-body);}
-.chat-menu .menu button, .chat-menu .menu a{display:block; width:100%; text-align:left; background:none; border:none; padding:9px 10px; font-size:14px; cursor:pointer; border-radius:5px; color:var(--ink); font-family:var(--font-body);}
+.chat-menu .menu{position:fixed; top:0; right:0; bottom:0; width:50%; min-width:230px; background:var(--white);
+  box-shadow:-8px 0 24px rgba(0,0,0,.18); padding:76px 0 24px; z-index:120; font-family:var(--font-body); overflow-y:auto;}
+.menu a{display:block; width:100%; text-align:left; background:none; border:none; padding:9px 10px; font-size:14px; cursor:pointer; border-radius:5px; color:var(--ink); font-family:var(--font-body);}
 .chat-menu .menu button:hover, .chat-menu .menu a:hover{background:var(--surface);}
 .chat-menu .menu .danger{color:var(--danger);}
 .swap-summary{display:flex; align-items:center; gap:10px; background:var(--white); border-radius:10px; padding:10px 12px; margin-bottom:10px; box-shadow:0 2px 6px rgba(0,0,0,.06); font-size:12.5px; font-family:var(--font-body);}
@@ -383,15 +383,15 @@ form.addbook button:hover{background:var(--btn-blue-hover);}
 
 /* Hamburger-Menue rechts im Header */
 header{position:sticky;}
-.burger{position:relative; background:none; border:none; padding:8px; margin:-8px -8px -8px 0; cursor:pointer; line-height:0;}
+.burger{position:relative; z-index:130; background:none; border:none; padding:8px; margin:-8px -8px -8px 0; cursor:pointer; line-height:0;}
 .burger .bars{display:flex; flex-direction:column; gap:5px; width:24px;}
 .burger .bars i{display:block; height:2.5px; border-radius:2px; background:var(--color-secondary); transition:transform .25s ease, opacity .2s ease;}
 .burger.open .bars i:nth-child(1){transform:translateY(7.5px) rotate(45deg);}
 .burger.open .bars i:nth-child(2){opacity:0;}
 .burger.open .bars i:nth-child(3){transform:translateY(-7.5px) rotate(-45deg);}
 .burger .badge{top:2px; right:0;}
-.menu{position:absolute; top:100%; right:12px; margin-top:6px; min-width:220px; background:var(--white); border-radius:10px;
-  box-shadow:0 8px 24px rgba(0,0,0,.18); padding:8px 0; z-index:120; font-family:var(--font-body);}
+.menu{position:fixed; top:0; right:0; bottom:0; width:50%; min-width:230px; background:var(--white);
+  box-shadow:-8px 0 24px rgba(0,0,0,.18); padding:76px 0 24px; z-index:120; font-family:var(--font-body); overflow-y:auto;}
 .menu a{display:block; padding:12px 18px; font-size:15px; color:var(--ink);}
 .menu a:hover{background:var(--tint-green);}
 .menu a.active{color:var(--color-secondary); font-weight:600; background:var(--tint-green);}
