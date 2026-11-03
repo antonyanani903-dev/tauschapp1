@@ -1,4 +1,4 @@
-"""Seitentausch - Buchtausch-App.
+"""IBK Büchertausch - Buchtausch-App.
 
 Flask-Hauptanwendung. Struktur bewusst angelehnt an das bestehende
 Buchhandlung-Projekt (app.py / models.py / extensions.py), damit Wartung
@@ -170,7 +170,12 @@ def book_img_url(book):
     if book.image_id:
         return url_for("image_file", image_id=book.image_id)
     if book.image_filename:
-        return url_for("static", filename="uploads/" + book.image_filename)
+        # Altbestand aus der ersten Version: Datei liegt auf der Platte. Auf Render geht sie bei
+        # jedem Deploy verloren - dann besser den Platzhalter zeigen als ein kaputtes Bild.
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "uploads",
+                            os.path.basename(book.image_filename))
+        if os.path.exists(path):
+            return url_for("static", filename="uploads/" + book.image_filename)
     return None
 
 
@@ -346,7 +351,7 @@ def try_create_match(me, liked_book):
 
     try:
         notifications.email_new_match(
-            match, db.session.get(User, owner_id), base_url(), os.environ.get("SITE_NAME", "Seitentausch"))
+            match, db.session.get(User, owner_id), base_url(), os.environ.get("SITE_NAME", "IBK Büchertausch"))
     except Exception:
         log.exception("Match-Mail fehlgeschlagen")
     return match
@@ -463,7 +468,8 @@ def register_hooks(app: Flask):
     @app.context_processor
     def inject_globals():
         ctx = {
-            "SITE_NAME": os.environ.get("SITE_NAME", "Seitentausch"),
+            "SITE_NAME": os.environ.get("SITE_NAME", "IBK Büchertausch"),
+            "now_year": datetime.now().year,
             "PARENT_URL": os.environ.get("PARENT_URL", "https://ibk-bilderbuch.de"),
             "PARENT_NAME": os.environ.get("PARENT_NAME", "IBK"),
             "IMPRESSUM_URL": os.environ.get("IMPRESSUM_URL", ""),
@@ -564,7 +570,7 @@ def register_routes(app: Flask):
             db.session.commit()
 
             login_user(user, remember=True)
-            flash("Willkommen bei Seitentausch!", "success")
+            flash("Willkommen beim " + os.environ.get("SITE_NAME", "IBK Büchertausch") + "!", "success")
             if not ok:
                 flash(loc_error + " Du kannst den Standort jederzeit im Profil nachtragen.", "info")
             return redirect(url_for("my_books" if ok else "discover"))
@@ -612,7 +618,7 @@ def register_routes(app: Flask):
             user = User.query.filter_by(email=email).first() if email else None
             if user and not user.is_banned:
                 link = base_url().rstrip("/") + url_for("reset_password", token=make_reset_token(user))
-                site = os.environ.get("SITE_NAME", "Seitentausch")
+                site = os.environ.get("SITE_NAME", "IBK Büchertausch")
                 text = (
                     f"Hallo {user.name},\n\n"
                     f"für dein {site}-Konto wurde ein neues Passwort angefordert.\n"
@@ -987,7 +993,7 @@ def register_routes(app: Flask):
             db.session.commit()
             try:
                 notifications.email_new_message(
-                    m, msg, m.other_user(uid), base_url(), os.environ.get("SITE_NAME", "Seitentausch"))
+                    m, msg, m.other_user(uid), base_url(), os.environ.get("SITE_NAME", "IBK Büchertausch"))
             except Exception:
                 log.exception("Nachrichten-Mail fehlgeschlagen")
             if wants_json():
