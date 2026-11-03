@@ -58,7 +58,6 @@
   <div class="foot-inner">
     {% if request.endpoint != 'index' %}
     <a class="parent-link" href="{{ PARENT_URL }}" target="_blank" rel="noopener">
-      <img src="{{ url_for('static', filename='images/ibk-mark.png') }}" alt="" width="22" height="24">
       <span>Ein Projekt von <b>{{ PARENT_NAME }}</b></span>
     </a>
     {% endif %}
