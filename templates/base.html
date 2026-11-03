@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<title>Bilderbuchtausch</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <meta name="theme-color" content="#58774e">
+<title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
 <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -20,8 +20,20 @@
 
 {% if current_user.is_authenticated %}
 <header>
-  <a class="brand" href="{{ url_for('discover') }}"><img class="brand-mark" src="{{ url_for('static', filename='images/ibk-mark.png') }}" alt="" width="24" height="26"></a>
-  <a class="profile-link" href="{{ url_for('profile') }}">{{ current_user.name.split(' ')[0] }}</a>
+  <a class="brand" href="{{ url_for('discover') }}"><img class="brand-mark" src="{{ url_for('static', filename='images/ibk-mark.png') }}" alt="" width="24" height="26">{% set _name = SITE_NAME.split(' ', 1) %}<span class="brand-text">{% if _name|length > 1 %}{{ _name[0] }} <span>{{ _name[1] }}</span>{% else %}{{ SITE_NAME[:6] }}<span>{{ SITE_NAME[6:] }}</span>{% endif %}</span></a>
+  <button class="burger" id="burger" type="button" aria-label="Menü" aria-expanded="false" aria-controls="menu">
+    <span class="bars"><i></i><i></i><i></i></span>
+    <b class="badge" data-badge="total" {% if not nav.counts.total %}hidden{% endif %}>{{ nav.counts.total }}</b>
+  </button>
+  <nav class="menu" id="menu" hidden>
+    <div class="menu-user">Hallo, {{ current_user.name.split(' ')[0] }}</div>
+    <a href="{{ url_for('discover') }}" class="{{ 'active' if request.endpoint in ['discover', 'second_chance'] else '' }}">📖 Entdecken</a>
+    <a href="{{ url_for('my_books') }}" class="{{ 'active' if request.endpoint in ['my_books', 'edit_book'] else '' }}">🗂️ Meine Bücher</a>
+    <a href="{{ url_for('matches') }}" class="{{ 'active' if request.endpoint in ['matches', 'chat'] else '' }}">🤝 Matches <b class="badge inline" data-badge="total" {% if not nav.counts.total %}hidden{% endif %}>{{ nav.counts.total }}</b></a>
+    <a href="{{ url_for('profile') }}" class="{{ 'active' if request.endpoint == 'profile' else '' }}">👤 Profil</a>
+    <a href="{{ url_for('logout') }}" class="menu-out">Abmelden</a>
+  </nav>
+  <div class="menu-backdrop" id="menu-backdrop" hidden></div>
 </header>
 {% endif %}
 
@@ -39,42 +51,42 @@
 
   {% block content %}{% endblock %}
 
-  <footer class="legal">
-    {% if request.endpoint != 'index' %}
-    <a class="parent-link" href="{{ PARENT_URL }}" target="_blank" rel="noopener">
-      <img src="{{ url_for('static', filename='images/ibk-mark.png') }}" alt="" width="22" height="24">
-      <span>Ein Projekt von <b>{{ PARENT_NAME }}</b> · Buchhandlung für Illustration und Bilderbücher</span>
-    </a>
-    {% endif %}
-    {% if IMPRESSUM_URL or PRIVACY_URL %}
-    <div class="legal-links">
-      {% if IMPRESSUM_URL %}<a href="{{ IMPRESSUM_URL }}" target="_blank" rel="noopener">Impressum</a>{% endif %}
-      {% if PRIVACY_URL %}<a href="{{ PRIVACY_URL }}" target="_blank" rel="noopener">Datenschutz</a>{% endif %}
-    </div>
-    {% endif %}
-  </footer>
   </div>
 </main>
 
+<footer class="site-footer">
+  <div class="foot-inner">
+    {% if request.endpoint != 'index' %}
+    <a class="parent-link" href="{{ PARENT_URL }}" target="_blank" rel="noopener">
+      <img src="{{ url_for('static', filename='images/ibk-mark.png') }}" alt="" width="22" height="24">
+      <span>Ein Projekt von <b>{{ PARENT_NAME }}</b></span>
+    </a>
+    {% endif %}
+    <div class="legal-links">
+      {% if IMPRESSUM_URL %}<a href="{{ IMPRESSUM_URL }}" target="_blank" rel="noopener">Impressum</a>{% endif %}
+      {% if PRIVACY_URL %}<a href="{{ PRIVACY_URL }}" target="_blank" rel="noopener">Datenschutz</a>{% endif %}
+      <a href="{{ PARENT_URL }}" target="_blank" rel="noopener">{{ PARENT_NAME }}-Shop</a>
+    </div>
+    <div class="copy">© {{ now_year }} {{ SITE_NAME }}</div>
+  </div>
+</footer>
+
 {% if current_user.is_authenticated %}
 <div id="toasts" class="toasts" aria-live="polite"></div>
-<nav class="tabs">
-  <a href="{{ url_for('discover') }}" class="{{ 'active' if request.endpoint == 'discover' else '' }}">
-    <span class="ic">📖</span>Entdecken
-  </a>
-  <a href="{{ url_for('my_books') }}" class="{{ 'active' if request.endpoint in ['my_books', 'edit_book'] else '' }}">
-    <span class="ic">🗂️</span>Meine Bücher
-  </a>
-  <a href="{{ url_for('matches') }}" class="{{ 'active' if request.endpoint in ['matches', 'chat'] else '' }}">
-    <span class="ic">🤝<b class="badge" data-badge="total" {% if not nav.counts.total %}hidden{% endif %}>{{ nav.counts.total }}</b></span>Matches
-  </a>
-  <a href="{{ url_for('profile') }}" class="{{ 'active' if request.endpoint == 'profile' else '' }}">
-    <span class="ic">👤</span>Profil
-  </a>
-</nav>
 {% endif %}
 
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% if current_user.is_authenticated %}
+<script>
+(function(){
+  var b=document.getElementById('burger'), m=document.getElementById('menu'), bd=document.getElementById('menu-backdrop');
+  function set(o){ m.hidden=!o; bd.hidden=!o; b.setAttribute('aria-expanded', o?'true':'false'); b.classList.toggle('open',o); }
+  b.addEventListener('click', function(e){ e.stopPropagation(); set(m.hidden); });
+  bd.addEventListener('click', function(){ set(false); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') set(false); });
+})();
+</script>
+{% endif %}
 {% block scripts %}{% endblock %}
 </body>
 </html>
