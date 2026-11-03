@@ -27,10 +27,10 @@
   </button>
   <nav class="menu" id="menu" hidden>
     <div class="menu-user">Hallo, {{ current_user.name.split(' ')[0] }}</div>
-    <a href="{{ url_for('discover') }}" class="{{ 'active' if request.endpoint in ['discover', 'second_chance'] else '' }}">📖 Entdecken</a>
-    <a href="{{ url_for('my_books') }}" class="{{ 'active' if request.endpoint in ['my_books', 'edit_book'] else '' }}">🗂️ Meine Bücher</a>
-    <a href="{{ url_for('matches') }}" class="{{ 'active' if request.endpoint in ['matches', 'chat'] else '' }}">🤝 Matches <b class="badge inline" data-badge="total" {% if not nav.counts.total %}hidden{% endif %}>{{ nav.counts.total }}</b></a>
-    <a href="{{ url_for('profile') }}" class="{{ 'active' if request.endpoint == 'profile' else '' }}">👤 Profil</a>
+    <a href="{{ url_for('discover') }}" class="{{ 'active' if request.endpoint in ['discover', 'second_chance'] else '' }}">Entdecken</a>
+    <a href="{{ url_for('my_books') }}" class="{{ 'active' if request.endpoint in ['my_books', 'edit_book'] else '' }}">Meine Bücher</a>
+    <a href="{{ url_for('matches') }}" class="{{ 'active' if request.endpoint in ['matches', 'chat'] else '' }}">Matches <b class="badge inline" data-badge="total" {% if not nav.counts.total %}hidden{% endif %}>{{ nav.counts.total }}</b></a>
+    <a href="{{ url_for('profile') }}" class="{{ 'active' if request.endpoint == 'profile' else '' }}">Profil</a>
     <a href="{{ url_for('logout') }}" class="menu-out">Abmelden</a>
   </nav>
   <div class="menu-backdrop" id="menu-backdrop" hidden></div>
