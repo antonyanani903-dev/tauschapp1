@@ -190,7 +190,7 @@ def button_email(site_name: str, greeting: str, paragraphs: list[str], button_la
       {paras}
     </td></tr>
     <tr><td align="center" style="padding:10px 28px 22px;">
-      <a href="{e(url, quote=True)}" style="display:inline-block;background:#3b82c4;color:#ffffff;text-decoration:none;font-family:'Segoe UI',Arial,sans-serif;font-size:15px;font-weight:600;padding:13px 30px;border-radius:5px;">{e(button_label)}</a>
+      <a href="{e(url, quote=True)}" style="display:inline-block;background:#7393B3;color:#ffffff;text-decoration:none;font-family:'Segoe UI',Arial,sans-serif;font-size:15px;font-weight:600;padding:13px 30px;border-radius:5px;">{e(button_label)}</a>
     </td></tr>
     <tr><td style="padding:4px 28px 24px;font-family:'Segoe UI',Arial,sans-serif;border-top:1px solid #e0e0e0;">
       <div style="padding-top:14px;">{notes}
