@@ -58,13 +58,12 @@
   <div class="foot-inner">
     {% if request.endpoint != 'index' %}
     <a class="parent-link" href="{{ PARENT_URL }}" target="_blank" rel="noopener">
-      <span>Ein Projekt von <b>{{ PARENT_NAME }}</b></span>
+      <span>Ein Projekt von {{ PARENT_NAME }} Buchhandlung für Illustration und Bilderbücher </span>
     </a>
     {% endif %}
     <div class="legal-links">
       {% if IMPRESSUM_URL %}<a href="{{ IMPRESSUM_URL }}" target="_blank" rel="noopener">Impressum</a>{% endif %}
       {% if PRIVACY_URL %}<a href="{{ PRIVACY_URL }}" target="_blank" rel="noopener">Datenschutz</a>{% endif %}
-      <a href="{{ PARENT_URL }}" target="_blank" rel="noopener">{{ PARENT_NAME }}-Shop</a>
     </div>
     <div class="copy">© {{ now_year }} {{ SITE_NAME }}</div>
   </div>
