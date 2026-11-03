@@ -5,7 +5,7 @@
      Das Gruen ist fuer weisse Schrift zu hell, deshalb ist --color-primary eine dunklere Stufe davon. */
   --brand-green:#7a9870; --brand-rose:#af385b;
   --color-primary:#58774e; --color-secondary:#3f5a39; --color-accent:#af385b; --color-accent-hover:#8f2d49;
-  --btn-blue:#3b82c4; --btn-blue-hover:#2f6fb0; --accent-ink:#af385b; --tint-green:rgba(88,119,78,.13); --tint-rose:rgba(175,56,91,.09);
+  --btn-blue:#7393B3; --btn-blue-hover:#0c4d77; --accent-ink:#af385b; --tint-green:rgba(88,119,78,.13); --tint-rose:rgba(175,56,91,.09);
   --font-heading:'Cormorant', serif; --font-body:'Segoe UI', sans-serif;
   --surface:#f8f8f8; --card-border:#e0e0e0; --muted:#6b6b6b; --white:#ffffff; --ink:#333333;
   --danger:#c0392b; --error-bg:#fdecea; --success-bg:#eaf3ea;
