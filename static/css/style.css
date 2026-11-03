@@ -36,11 +36,12 @@ header{
 .brand{font-family:var(--font-heading); font-size:24px; font-weight:600; color:var(--color-secondary); display:inline-flex; align-items:center; gap:9px;}
 .brand-mark{height:26px; width:auto; display:block;}
 header{position:sticky;}
+header::after{content:""; position:absolute; left:0; right:0; bottom:0; height:3px; background:linear-gradient(90deg,var(--brand-green) 50%,var(--brand-rose) 50%);}
 .brand-text{color:var(--color-secondary);}
 .brand-text span{color:var(--accent-ink);}
 .profile-link{font-size:13px; color:var(--muted); font-weight:500; font-family:var(--font-body);}
 
-main{flex:1; max-width:480px; width:100%; margin:0 auto; padding:16px 20px 90px;}
+main{flex:1; max-width:480px; width:100%; margin:0 auto; padding:16px 20px 30px;}
 main.full{max-width:560px; display:flex; align-items:center; min-height:100vh; padding-bottom:40px;}
 
 .flash-stack{margin-bottom:14px;}
@@ -157,7 +158,7 @@ form.addbook button:hover{background:var(--btn-blue-hover);}
 .bubble{max-width:75%; padding:9px 13px; border-radius:14px; font-size:14.5px; line-height:1.4; font-family:var(--font-body);}
 .bubble.me{align-self:flex-end; background:var(--color-primary); color:#fff; border-bottom-right-radius:4px;}
 .bubble.them{align-self:flex-start; background:var(--white); border:1px solid var(--card-border); border-bottom-left-radius:4px;}
-.chat-input{display:flex; gap:8px; position:sticky; bottom:70px;}
+.chat-input{display:flex; gap:8px; position:sticky; bottom:12px;}
 .chat-input input{
   flex:1; padding:10px 13px; border-radius:20px; border:1px solid #ccc; background:var(--white);
   color:var(--ink); font-family:var(--font-body); font-size:14px;
@@ -165,17 +166,6 @@ form.addbook button:hover{background:var(--btn-blue-hover);}
 .chat-input button{background:var(--btn-blue); color:#fff; border:none; border-radius:20px; padding:0 18px; font-weight:600; cursor:pointer; transition:background-color .3s ease;}
 .chat-input button:hover{background:var(--btn-blue-hover);}
 
-/* Untere Tab-Leiste */
-nav.tabs{
-  position:fixed; bottom:0; left:0; right:0; display:flex; background:var(--white);
-  box-shadow:0 -2px 8px rgba(0,0,0,.06); padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
-}
-nav.tabs a{
-  flex:1; font-size:11.5px; color:var(--muted); display:flex; flex-direction:column;
-  align-items:center; gap:3px; padding:4px; font-family:var(--font-body);
-}
-nav.tabs a .ic{font-size:19px;}
-nav.tabs a.active{color:var(--color-secondary); font-weight:600;}
 
 @media (max-width:420px){
   .landing h1{font-size:34px;}
@@ -189,7 +179,6 @@ nav.tabs a.active{color:var(--color-secondary); font-weight:600;}
 [hidden]{display:none !important;}
 
 /* Badges (Tab-Leiste) */
-nav.tabs a .ic{position:relative;}
 .badge{
   position:absolute; top:-6px; right:-12px; min-width:18px; height:18px; padding:0 5px;
   border-radius:9px; background:var(--color-accent); color:#fff; font-size:11px; font-weight:700;
@@ -386,9 +375,34 @@ nav.tabs a .ic{position:relative;}
 .parent-link img{height:24px; width:auto; flex-shrink:0;}
 .parent-link b{color:var(--color-secondary);}
 .parent-link:hover span{text-decoration:underline;}
-footer.legal{flex-direction:column; align-items:center; gap:10px;}
-footer.legal .legal-links{display:flex; gap:16px;}
+
 .landing .parent{display:flex; align-items:center; gap:14px; margin-top:34px; padding:14px 16px; background:#fff; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,.06); color:#333; max-width:420px;}
 .landing .parent img{height:46px; width:auto; flex-shrink:0;}
 .landing .parent span{font-size:12.5px; line-height:1.4; color:#6b6b6b; font-family:var(--font-body);}
 .landing .parent b{color:#333;}
+
+/* Hamburger-Menue rechts im Header */
+header{position:sticky;}
+.burger{position:relative; background:none; border:none; padding:8px; margin:-8px -8px -8px 0; cursor:pointer; line-height:0;}
+.burger .bars{display:flex; flex-direction:column; gap:5px; width:24px;}
+.burger .bars i{display:block; height:2.5px; border-radius:2px; background:var(--color-secondary); transition:transform .25s ease, opacity .2s ease;}
+.burger.open .bars i:nth-child(1){transform:translateY(7.5px) rotate(45deg);}
+.burger.open .bars i:nth-child(2){opacity:0;}
+.burger.open .bars i:nth-child(3){transform:translateY(-7.5px) rotate(-45deg);}
+.burger .badge{top:2px; right:0;}
+.menu{position:absolute; top:100%; right:12px; margin-top:6px; min-width:220px; background:var(--white); border-radius:10px;
+  box-shadow:0 8px 24px rgba(0,0,0,.18); padding:8px 0; z-index:120; font-family:var(--font-body);}
+.menu a{display:block; padding:12px 18px; font-size:15px; color:var(--ink);}
+.menu a:hover{background:var(--tint-green);}
+.menu a.active{color:var(--color-secondary); font-weight:600; background:var(--tint-green);}
+.menu-user{padding:6px 18px 10px; font-size:12.5px; color:var(--muted); border-bottom:1px solid var(--card-border); margin-bottom:4px;}
+.menu .menu-out{border-top:1px solid var(--card-border); margin-top:4px; color:var(--muted);}
+.menu .badge.inline{position:static; display:inline-block; margin-left:6px; vertical-align:1px;}
+.menu-backdrop{position:fixed; inset:0; z-index:110; background:rgba(0,0,0,.25);}
+
+/* Footer */
+.site-footer{background:var(--white); border-top:1px solid var(--card-border); margin-top:10px; padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));}
+.site-footer .foot-inner{max-width:480px; margin:0 auto; display:flex; flex-direction:column; align-items:center; gap:12px; font-family:var(--font-body); font-size:12.5px; color:var(--muted);}
+.site-footer .legal-links{display:flex; gap:18px; flex-wrap:wrap; justify-content:center;}
+.site-footer .legal-links a:hover{text-decoration:underline; color:var(--color-secondary);}
+.site-footer .copy{font-size:11.5px; opacity:.8;}
