@@ -9,8 +9,9 @@
   </div>
 </div>
 
-<section class="panel">
-  <h2>Standort &amp; Umkreis</h2>
+<details class="panel acc">
+  <summary><h2>Standort &amp; Umkreis</h2></summary>
+  <div class="acc-body">
   <p class="muted">Bücher werden nach Entfernung sortiert. Anderen zeigen wir nur eine grobe Entfernung, nie deinen Ort.</p>
   <form method="post" action="{{ url_for('save_location') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -34,10 +35,12 @@
     </select>
     <button class="btn btn-primary btn-block" type="submit">Standort speichern</button>
   </form>
-</section>
+  </div>
+</details>
 
-<section class="panel">
-  <h2>Benachrichtigungen</h2>
+<details class="panel acc">
+  <summary><h2>Benachrichtigungen</h2></summary>
+  <div class="acc-body">
   <form method="post" action="{{ url_for('update_profile') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <label class="field" for="name">Name</label>
@@ -53,11 +56,13 @@
     <span>Hinweise im Browser, wenn die App im Hintergrund ist</span>
     <button class="btn btn-ghost btn-sm" type="button" id="browser-notify-btn" style="margin-top:0">Aktivieren</button>
   </div>
-</section>
+  </div>
+</details>
 
 {% if blocked %}
-<section class="panel">
-  <h2>Blockierte Personen</h2>
+<details class="panel acc">
+  <summary><h2>Blockierte Personen</h2></summary>
+  <div class="acc-body">
   <ul class="list-plain">
     {% for u in blocked %}
     <li><span>{{ u.name }}</span>
@@ -67,11 +72,13 @@
       </form></li>
     {% endfor %}
   </ul>
-</section>
+  </div>
+</details>
 {% endif %}
 
-<section class="panel">
-  <h2>Passwort ändern</h2>
+<details class="panel acc">
+  <summary><h2>Passwort ändern</h2></summary>
+  <div class="acc-body">
   <form method="post" action="{{ url_for('change_password') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <label class="field" for="cp">Aktuelles Passwort</label>
@@ -82,12 +89,14 @@
     <input id="np2" type="password" name="new_password2" required minlength="8" autocomplete="new-password">
     <button class="btn btn-primary btn-block" type="submit">Passwort ändern</button>
   </form>
-</section>
+  </div>
+</details>
 
 <p style="text-align:center;margin:18px 0"><a class="btn btn-ghost" href="{{ url_for('logout') }}">Abmelden</a></p>
 
-<section class="panel danger" id="konto-loeschen">
-  <h2>Konto löschen</h2>
+<details class="panel acc danger" id="konto-loeschen">
+  <summary><h2>Konto löschen</h2></summary>
+  <div class="acc-body">
   <p class="muted">Dein Konto, deine Bücher, Matches und Chats werden endgültig gelöscht. Das kann nicht rückgängig gemacht werden.</p>
   <form method="post" action="{{ url_for('delete_account') }}" data-confirm="Konto wirklich endgültig löschen?">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -96,7 +105,8 @@
     <label class="check"><input type="checkbox" name="confirm" value="yes" required> Ja, ich möchte mein Konto unwiderruflich löschen.</label>
     <button class="btn btn-danger btn-block" type="submit">Konto endgültig löschen</button>
   </form>
-</section>
+  </div>
+</details>
 {% endblock %}
 {% block scripts %}<script>
 (function () {
