@@ -62,10 +62,17 @@
     </a>
     {% endif %}
     <div class="legal-links">
+      <p>© 2026 IBK Bilderbuchtausch | 
+    <a href="{{ url_for('impressum') }}">Impressum</a> | 
+    <a href="{{ url_for('agb') }}">AGB</a> | 
+    <a href="{{ url_for('datenschutz') }}">Datenschutz</a> | 
+    <a href="{{ url_for('kontakt') }}">Kontakt</a>
+  </p>
       {% if IMPRESSUM_URL %}<a href="{{ IMPRESSUM_URL }}" target="_blank" rel="noopener">Impressum</a>{% endif %}
       {% if PRIVACY_URL %}<a href="{{ PRIVACY_URL }}" target="_blank" rel="noopener">Datenschutz</a>{% endif %}
     </div>
     <div class="copy">© {{ now_year }} {{ SITE_NAME }}</div>
+    
   </div>
 </footer>
 
