@@ -30,7 +30,7 @@ h1, h2, h3{font-family:var(--font-heading); color:var(--color-secondary); font-w
 
 header{
   position:sticky; top:0; z-index:100; background:var(--white);
-  padding:18px 20px 14px; display:flex; align-items:center; justify-content:space-between;
+  padding:180px 20px 14px; display:flex; align-items:center; justify-content:space-between;
   box-shadow:0 4px 6px -2px rgba(0,0,0,.08);
 }
 .brand{font-family:var(--font-heading); font-size:24px; font-weight:600; color:var(--color-secondary); display:inline-flex; align-items:center; gap:9px;}
