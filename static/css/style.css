@@ -36,7 +36,6 @@ header{
 .brand{font-family:var(--font-heading); font-size:24px; font-weight:600; color:var(--color-secondary); display:inline-flex; align-items:center; gap:9px;}
 .brand-mark{height:26px; width:auto; display:block;}
 header{position:sticky;}
-header::after{content:""; position:absolute; left:0; right:0; bottom:0; height:3px; background:linear-gradient(90deg,var(--brand-green) 50%,var(--brand-rose) 50%);}
 .brand-text{color:var(--color-secondary);}
 .brand-text span{color:var(--accent-ink);}
 .profile-link{font-size:13px; color:var(--muted); font-weight:500; font-family:var(--font-body);}
