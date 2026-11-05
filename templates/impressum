@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Profil – {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div class="profile-head">
+  <div class="avatar">{{ current_user.name[:1]|upper }}</div>
+  <div>
+    <div class="n">{{ current_user.name }}</div>
+    <div class="muted">{{ current_user.email }} · {{ books_count }} Buch{{ 'er' if books_count != 1 else '' }}</div>
+  </div>
+</div>
+
+<section class="panel">
+  <h2>Standort &amp; Umkreis</h2>
+  <p class="muted">Bücher werden nach Entfernung sortiert. Anderen zeigen wir nur eine grobe Entfernung, nie deinen Ort.</p>
+  <form method="post" action="{{ url_for('save_location') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="next" value="{{ url_for('profile') }}">
+    <div class="row">
+      <div style="max-width:110px">
+        <label class="field" for="p-country">Land</label>
+        <select id="p-country" name="country">
+          {% for code, label in COUNTRIES.items() %}<option value="{{ code }}" {{ 'selected' if current_user.country == code else '' }}>{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="field" for="p-loc">PLZ oder Ort</label>
+        <input id="p-loc" name="location" value="{{ current_user.location_label }}" placeholder="leer lassen = kein Standort">
+      </div>
+    </div>
+    <label class="field" for="p-radius">Umkreis</label>
+    <select id="p-radius" name="radius">
+      {% for r in RADIUS_CHOICES %}<option value="{{ r }}" {{ 'selected' if current_user.radius_km == r else '' }}>{{ r }} km</option>{% endfor %}
+      <option value="all" {{ 'selected' if not current_user.radius_km else '' }}>Überall</option>
+    </select>
+    <button class="btn btn-primary btn-block" type="submit">Standort speichern</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Benachrichtigungen</h2>
+  <form method="post" action="{{ url_for('update_profile') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="field" for="name">Name</label>
+    <input id="name" name="name" value="{{ current_user.name }}" required maxlength="100">
+    <label class="check">
+      <input type="checkbox" name="email_notifications" value="yes" {{ 'checked' if current_user.email_notifications else '' }}>
+      <span>Per E-Mail benachrichtigen bei neuem Match und neuen Nachrichten</span>
+    </label>
+    {% if not mail_configured %}<p class="footnote">Hinweis: Der E-Mail-Versand ist auf diesem Server noch nicht eingerichtet.</p>{% endif %}
+    <button class="btn btn-primary btn-block" type="submit">Speichern</button>
+  </form>
+  <div class="switch-row" id="browser-notify" hidden>
+    <span>Hinweise im Browser, wenn die App im Hintergrund ist</span>
+    <button class="btn btn-ghost btn-sm" type="button" id="browser-notify-btn" style="margin-top:0">Aktivieren</button>
+  </div>
+</section>
+
+{% if blocked %}
+<section class="panel">
+  <h2>Blockierte Personen</h2>
+  <ul class="list-plain">
+    {% for u in blocked %}
+    <li><span>{{ u.name }}</span>
+      <form method="post" action="{{ url_for('unblock_user', user_id=u.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="link-btn" type="submit">Aufheben</button>
+      </form></li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="panel">
+  <h2>Passwort ändern</h2>
+  <form method="post" action="{{ url_for('change_password') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="field" for="cp">Aktuelles Passwort</label>
+    <input id="cp" type="password" name="current_password" required autocomplete="current-password">
+    <label class="field" for="np">Neues Passwort <span class="optional">(mind. 8 Zeichen)</span></label>
+    <input id="np" type="password" name="new_password" required minlength="8" autocomplete="new-password">
+    <label class="field" for="np2">Neues Passwort wiederholen</label>
+    <input id="np2" type="password" name="new_password2" required minlength="8" autocomplete="new-password">
+    <button class="btn btn-primary btn-block" type="submit">Passwort ändern</button>
+  </form>
+</section>
+
+<p style="text-align:center;margin:18px 0"><a class="btn btn-ghost" href="{{ url_for('logout') }}">Abmelden</a></p>
+
+<section class="panel danger" id="konto-loeschen">
+  <h2>Konto löschen</h2>
+  <p class="muted">Dein Konto, deine Bücher, Matches und Chats werden endgültig gelöscht. Das kann nicht rückgängig gemacht werden.</p>
+  <form method="post" action="{{ url_for('delete_account') }}" data-confirm="Konto wirklich endgültig löschen?">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="field" for="dp">Passwort zur Bestätigung</label>
+    <input id="dp" type="password" name="password" required autocomplete="current-password">
+    <label class="check"><input type="checkbox" name="confirm" value="yes" required> Ja, ich möchte mein Konto unwiderruflich löschen.</label>
+    <button class="btn btn-danger btn-block" type="submit">Konto endgültig löschen</button>
+  </form>
+</section>
+{% endblock %}
+{% block scripts %}<script>
+(function () {
+  var S = window.Seiten, row = document.getElementById('browser-notify'), btn = document.getElementById('browser-notify-btn');
+  if (!S || !S.browserNotifications.supported) return;
+  row.hidden = false;
+  function refresh() {
+    var p = S.browserNotifications.permission();
+    if (p === 'granted') { btn.textContent = 'Aktiv ✓'; btn.disabled = true; }
+    else if (p === 'denied') { btn.textContent = 'Im Browser blockiert'; btn.disabled = true; }
+  }
+  refresh();
+  btn.addEventListener('click', function () { S.browserNotifications.enable().then(refresh); });
+})();
+</script>{% endblock %}
