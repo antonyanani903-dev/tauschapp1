@@ -371,7 +371,7 @@ form.addbook button:hover{background:var(--btn-blue-hover);}
 
 /* Zugehoerigkeit zur Buchhandlung IBK */
 .parent-link{display:inline-flex; align-items:center; gap:9px; color:var(--muted); font-size:12.5px; line-height:1.35; font-family:var(--font-body); text-align:left;}
-.arent-link img{height:24px; width:auto; flex-shrink:0;}
+.parent-link img{height:64px; width:auto; flex-shrink:0;}
 .parent-link b{color:var(--color-secondary);}
 .parent-link:hover span{text-decoration:underline;}
 
