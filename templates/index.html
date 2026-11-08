@@ -7,14 +7,12 @@
     <a class="btn btn-primary" href="{{ url_for('register') }}">Kostenlos registrieren</a>
     <a class="btn btn-ghost" href="{{ url_for('login') }}">Anmelden</a>
   </div>
-<div class="lead" href="{{ PARENT_URL }}" target="_blank" rel="noopener">
   <a class="parent" >
     <img src="{{ url_for('static', filename='images/ibk-mark-transparent.png') }}" alt="IBK – Buchhandlung für Illustration und Bilderbücher">
-  </a> <br>
+  </a> 
+<div class="lead" href="{{ PARENT_URL }}" target="_blank" rel="noopener">
+
      Ein Projekt von <b>{{ PARENT_NAME }}</b>, deiner Buchhandlung für Illustration und Bilderbücher.
-   <a class="parent" >
-    <img src="{{ url_for('static', filename='images/ibk.png') }}" alt="IBK – Buchhandlung für Illustration und Bilderbücher">
-  </a>
 </div>
 </section>
 {% endblock %}
