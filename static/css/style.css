@@ -52,7 +52,7 @@ main.full{max-width:560px; display:flex; align-items:center; min-height:100vh; p
 .landing{text-align:left;}
 .landing h1{font-size:44px; margin:0 0 14px; font-weight:500;}
 .landing h1 span{color:var(--accent-ink);}
-.landing .lead{color:var(--muted); font-size:17px; line-height:1.6; margin-bottom:26px; max-width:40ch; font-family:var(--font-heading);}
+.landing .lead{color:var(--muted); font-size:17px; line-height:1.6; margin-bottom: 26px; max-width:40ch; font-family:var(--font-heading);}
 .landing-actions{display:flex; gap:12px; flex-wrap:wrap;}
 
 /* Buttons: nur so gross wie ihr Text (plus kleiner Rand) */
@@ -375,7 +375,7 @@ form.addbook button:hover{background:var(--btn-blue-hover);}
 .parent-link b{color:var(--color-secondary);}
 .parent-link:hover span{text-decoration:underline;}
 
-.landing .parent{display:flex; align-items:center; gap:14px; margin-top:34px; padding:14px 16px; background:#fff; border-radius:50px; box-shadow:0 2px 6px rgba(0,0,0,.06); color:#0c4d77; max-width:120px;}
+.landing .parent{display:flex; align-items:center; gap:14px; margin-top:34px; padding:14px 16px; background:#fff; border-radius:50px; box-shadow:0 2px 6px rgba(0,0,0,.06); color:#0c4d77; hight: 220px; max-width:220px;}
 .landing .parent img{height:56px; width:auto; flex-shrink:0;}
 .landing .parent span{font-size:12.5px; line-height:1.4; color:#7393B3; font-family:var(--font-body);}
 .landing .parent b{color:#0c4d77;}
