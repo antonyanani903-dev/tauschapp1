@@ -52,7 +52,7 @@ main.full{max-width:560px; display:flex; align-items:center; min-height:100vh; p
 .landing{text-align:left; margin:10px;}
 .landing h1{font-size:44px; margin:0 0 14px; font-weight:500;}
 .landing h1 span{color:var(--accent-ink);}
-.landing .lead{color:var(--muted); font-size:17px; line-height:1.6; margin-bottom: 26px; max-width:40ch; font-family:var(--font-heading);}
+.landing .lead{color:var(--accent-ink); font-size:17px; line-height:1.6; margin-bottom: 26px; max-width:40ch; font-family:var(--font-heading);}
 .landing-actions{display:flex; gap:12px; flex-wrap:wrap;}
 
 /* Buttons: nur so gross wie ihr Text (plus kleiner Rand) */
