@@ -410,8 +410,8 @@ header{position:sticky;}
 .site-footer a{color:inherit;}
 .site-footer p{font-size:1.1rem; line-height:1.7; margin:0;}
 .site-footer p a:hover{text-decoration:underline;}
-.site-footer .social-icons{color:var(--color-primary); font-size:2em; margin:5px; line-height:1;}
-.site-footer .social-icons a{display:inline-block; margin:0 6px;}
+.site-footer .social-icons{color:var(--color-primary); font-size:2em; margin:2px; line-height:1;}
+.site-footer .social-icons a{display:inline-block;}
 .site-footer .social-icons svg{display:block;}
 @media (prefers-color-scheme: dark){ .site-footer{background:#23262b; color:#ddd;} }
 
