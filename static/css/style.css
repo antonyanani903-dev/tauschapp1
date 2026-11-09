@@ -384,7 +384,7 @@ form.addbook button:hover{background:var(--btn-blue-hover);}
 header{position:sticky;}
 .burger{position:relative; z-index:130; background:none; border:none; padding:8px 50px; margin:-8px -8px -8px 0; cursor:pointer; line-height:0;}
 .burger .bars{display:flex; flex-direction:column; gap:5px; width:24px;}
-.burger .bars i{display:block; height:2.5px; border-radius:2px; background:var(--color-secondary); transition:transform .25s ease, opacity .2s ease;}
+.burger .bars i{display:block; height:2.5px; border-radius:2px; background:var(--color-secondary); color: #ffffff; transition:transform .25s ease, opacity .2s ease;}
 .burger.open .bars i:nth-child(1){transform:translateY(7.5px) rotate(45deg);}
 .burger.open .bars i:nth-child(2){opacity:0;}
 .burger.open .bars i:nth-child(3){transform:translateY(-7.5px) rotate(-45deg);}
