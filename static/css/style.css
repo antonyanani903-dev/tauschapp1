@@ -445,6 +445,10 @@ main.full:has(.rechtliches){display:block; min-height:0; padding-top:20px;}
   .rechtliches p, .rechtliches li{font-size:1.1rem; line-height:1.4;}
 }
 
+/* Größere Buchbilder auf der Matches-Seite */
+.match-item .mini-cover{width:72px; height:98px; border-radius:6px;}
+.match-item .pair{gap:6px;}
+
 /* Dünnere Button-Texte */
 .btn,
 .auth-form button,
