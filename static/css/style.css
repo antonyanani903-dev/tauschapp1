@@ -446,7 +446,7 @@ main.full:has(.rechtliches){display:block; min-height:0; padding-top:20px;}
 }
 
 /* Größere Buchbilder auf der Matches-Seite */
-.match-item .mini-cover{width:72px; height:98px; border-radius:6px;}
+.match-item .mini-cover{width:120px; height:170px; border-radius:6px;}
 .match-item .pair{gap:6px;}
 
 /* Dünnere Button-Texte */
