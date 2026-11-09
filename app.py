@@ -473,7 +473,7 @@ def register_hooks(app: Flask):
             "PARENT_URL": os.environ.get("PARENT_URL", "https://ibk-bilderbuch.de"),
             "PARENT_NAME": os.environ.get("PARENT_NAME", "IBK"),
             "IMPRESSUM_URL": os.environ.get("IMPRESSUM_URL", ""),
-            "PRIVACY_URL": os.environ.get("PRIVACY_URL", ""),
+            "PRIVACY_URL": os.environ.get("PRIVACY_URL") or url_for("privacy"),
             "COUNTRIES": geo.COUNTRIES,
             "RADIUS_CHOICES": geo.RADIUS_CHOICES,
             "CONDITIONS": CONDITIONS,
@@ -520,6 +520,10 @@ def register_routes(app: Flask):
     @app.route("/healthz")
     def healthz():
         return "ok", 200, {"Cache-Control": "no-store"}
+
+    @app.route("/datenschutz")
+    def privacy():
+        return render_template("datenschutz.html")
 
     @app.route("/")
     def index():
