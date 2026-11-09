@@ -444,3 +444,13 @@ main.full:has(.rechtliches){display:block; min-height:0; padding-top:20px;}
   .rechtliches h3{font-size:1.2rem;}
   .rechtliches p, .rechtliches li{font-size:1.1rem; line-height:1.4;}
 }
+
+/* Dünnere Button-Texte */
+.btn,
+.auth-form button,
+.swipe-btns button,
+form.addbook button,
+.filter-bar button,
+.chat-input button{
+  font-weight:400;
+}
