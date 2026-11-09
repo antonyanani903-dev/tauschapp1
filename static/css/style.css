@@ -307,7 +307,10 @@ form.addbook button:hover{background:var(--btn-blue-hover);}
 .chat-menu .menu .danger{color:var(--danger);}
 .swap-summary{display:flex; align-items:center; gap:10px; background:var(--white); border-radius:10px; padding:10px 12px; margin-bottom:10px; box-shadow:0 2px 6px rgba(0,0,0,.06); font-size:12.5px; font-family:var(--font-body);}
 .swap-summary .b{flex:1; display:flex; gap:8px; align-items:center; min-width:0;}
-.swap-summary .b .mini-cover{width:36px; height:48px; font-size:16px;}
+
+.swap-summary .b .mini-cover{width:120px; height:160px; font-size:24px; border-radius:6px;}
+
+
 .swap-summary .b div{min-width:0;}
 .swap-summary .b b{display:block; font-family:var(--font-heading); font-size:15px; color:var(--color-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 .swap-summary .b small{color:var(--muted);}
