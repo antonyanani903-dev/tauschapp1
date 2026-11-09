@@ -461,3 +461,14 @@ main.full:has(.rechtliches){display:block; min-height:0; padding-top:20px;}
 @media (prefers-color-scheme: dark){
   .rechtliches, .rechtliches p, .rechtliches li{color:#ddd;} .rechtliches h2, .rechtliches h3{color:#fff;} .rechtliches h1, .rechtliches a{color:#9fc3e0;}
 }
+/* Hamburger-Menü dauerhaft schwarz */
+.burger .bars i {
+    background-color: #000000 !important;
+    display: block !important;
+    opacity: 1;
+}
+
+/* Auch im geöffneten Zustand */
+.burger.open .bars i:nth-child(2) {
+    opacity: 0;
+}
