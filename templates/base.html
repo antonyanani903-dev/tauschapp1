@@ -20,7 +20,7 @@
 
 {% if current_user.is_authenticated %}
 <header>
-  <a class="brand" href="{{ url_for('discover') }}"><img class="brand-mark" src="{{ url_for('static', filename='images/ibk-mark.png') }}" alt="" width="24" height="26"></a>
+  <a class="brand" href="{{ url_for('discover') }}"><img class="brand-mark" src="{{ url_for('static', filename='images/ibk-mark.png') }}" alt="" width="24" height="26">{% set _name = SITE_NAME.split(' ', 1) %}<span class="brand-text">{% if _name|length > 1 %}{{ _name[0] }} <span>{{ _name[1] }}</span>{% else %}{{ SITE_NAME[:6] }}<span>{{ SITE_NAME[6:] }}</span>{% endif %}</span></a>
   <button class="burger" id="burger" type="button" aria-label="Menü" aria-expanded="false" aria-controls="menu">
     <span class="bars"><i></i><i></i><i></i></span>
     <b class="badge" data-badge="total" {% if not nav.counts.total %}hidden{% endif %}>{{ nav.counts.total }}</b>
@@ -29,7 +29,7 @@
     <div class="menu-user">Hallo, {{ current_user.name.split(' ')[0] }}</div>
     <a href="{{ url_for('discover') }}" class="{{ 'active' if request.endpoint in ['discover', 'second_chance'] else '' }}">Entdecken</a>
     <a href="{{ url_for('my_books') }}" class="{{ 'active' if request.endpoint in ['my_books', 'edit_book'] else '' }}">Meine Bücher</a>
-    <a href="{{ url_for('matches') }}" class="{{ 'active' if request.endpoint in ['matches', 'chat'] else '' }}"> Treffer <b class="badge inline" data-badge="total" {% if not nav.counts.total %}hidden{% endif %}>{{ nav.counts.total }}</b></a>
+    <a href="{{ url_for('matches') }}" class="{{ 'active' if request.endpoint in ['matches', 'chat'] else '' }}">Matches <b class="badge inline" data-badge="total" {% if not nav.counts.total %}hidden{% endif %}>{{ nav.counts.total }}</b></a>
     <a href="{{ url_for('profile') }}" class="{{ 'active' if request.endpoint == 'profile' else '' }}">Profil</a>
     <a href="{{ url_for('logout') }}" class="menu-out">Abmelden</a>
   </nav>
@@ -55,20 +55,16 @@
 </main>
 
 <footer class="site-footer">
-  <div class="foot-inner">
-    {% if request.endpoint != 'index' %}
-    <a class="parent-link" href="{{ PARENT_URL }}" target="_blank" rel="noopener">
-      <span>Ein Projekt von {{ PARENT_NAME }} Buchhandlung für Illustration und Bilderbücher </span>
-    </a>
-    {% endif %}
-    <div class="legal-links">
-      
-      {% if IMPRESSUM_URL %}<a href="{{ IMPRESSUM_URL }}" target="_blank" rel="noopener">Impressum</a>{% endif %}
-      {% if PRIVACY_URL %}<a href="{{ PRIVACY_URL }}" target="_blank" rel="noopener">Datenschutz</a>{% endif %}
-    </div>
-    <div class="copy">© {{ now_year }} {{ SITE_NAME }}</div>
-    
+  <div class="social-icons">
+    <a href="https://www.facebook.com/profile.php?id=61573271918691" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M13.5 22v-8.2h2.8l.5-3.3h-3.3V8.4c0-.9.4-1.7 1.8-1.7h1.6V3.8s-1.3-.2-2.6-.2c-2.6 0-4.3 1.6-4.3 4.5v2.4H7.2v3.3H10V22h3.5z"/></svg></a>
+    <a href="https://www.instagram.com/ibk_bilderbuch/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg></a>
   </div>
+  <p>© {{ now_year }} IBK |
+    <a href="{{ IMPRESSUM_URL or PARENT_URL ~ '/impressum' }}" target="_blank" rel="noopener">Impressum</a> |
+    <a href="{{ TERMS_URL or PARENT_URL ~ '/agb' }}" target="_blank" rel="noopener">AGB</a> |
+    <a href="{{ PRIVACY_URL }}">Datenschutz</a> |
+    <a href="{{ CONTACT_URL or PARENT_URL ~ '/kontakt' }}" target="_blank" rel="noopener">Kontakt</a>
+  </p>
 </footer>
 
 {% if current_user.is_authenticated %}
