@@ -12,12 +12,6 @@
   padding-bottom: env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box; margin:0; padding:0;}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --surface:#1e2228; --card-border:#333a42; --white:#262b32; --ink:#e8e8e8; --muted:#a3a3a3;
-    --color-secondary:#9db5cf; --accent-ink:#e88fa8; --tint-green:rgba(115,147,179,.22); --tint-rose:rgba(232,143,168,.12);
-  }
-}
 html{height:100%;}
 body{
   min-height:100%; background:var(--surface); color:var(--ink);
@@ -381,11 +375,10 @@ form.addbook button:hover{background:var(--btn-blue-hover);}
 .landing .parent b{color:#0c4d77;}
 
 /* Hamburger-Menue rechts im Header */
-/* Hamburger-Menue rechts im Header */
 header{position:sticky;}
-.burger{position:relative; z-index:130; background:none; border:none; padding:8px; margin:-8px -8px -8px 0; cursor:pointer; line-height:0;}
+.burger{position:relative; z-index:130; background:none; border:none; padding:8px 50px; margin:-8px -8px -8px 0; cursor:pointer; line-height:0;}
 .burger .bars{display:flex; flex-direction:column; gap:5px; width:24px;}
-.burger .bars i{display:block; height:2.5px; border-radius:2px; background:var(--color-secondary); transition:transform .25s ease, opacity .2s ease;}
+.burger .bars i{display:block; height:2.5px; border-radius:2px; background:#000; transition:transform .25s ease, opacity .2s ease;}
 .burger.open .bars i:nth-child(1){transform:translateY(7.5px) rotate(45deg);}
 .burger.open .bars i:nth-child(2){opacity:0;}
 .burger.open .bars i:nth-child(3){transform:translateY(-7.5px) rotate(-45deg);}
@@ -393,9 +386,6 @@ header{position:sticky;}
 #menu{position:fixed; top:0; right:0; bottom:0; width:50%; min-width:240px; background:var(--white);
   box-shadow:-8px 0 24px rgba(0,0,0,.18); padding:76px 10px 24px; z-index:120; overflow-y:auto;
   font-family:var(--font-heading); font-size:20px; font-weight:300; color:#0c4d77;}
-
-
-
 @media (max-width:768px){#menu{width:60%;}}
 #menu a{display:block; padding:15px; font-size:20px; font-weight:300; color:#0c4d77; border-bottom:1px solid #eee;}
 #menu a:hover{background:#f5f5f5;}
@@ -404,10 +394,6 @@ header{position:sticky;}
 #menu .menu-out{color:var(--muted); border-bottom:none;}
 #menu .badge.inline{position:static; display:inline-block; margin-left:6px; vertical-align:3px;}
 .menu-backdrop{position:fixed; inset:0; z-index:110; background:rgba(0,0,0,.3);}
-@media (prefers-color-scheme: dark){
-  #menu, #menu a{color:#9fc3e0;} #menu a{border-bottom-color:rgba(255,255,255,.1);} #menu a:hover,#menu a.active{background:rgba(255,255,255,.07);}
-  #menu .menu-user{border-bottom-color:rgba(255,255,255,.1);}
-}
 
 /* Footer wie auf ibk-bilderbuch.de */
 .site-footer{background:#ebebe3; padding:22px 10px calc(22px + env(safe-area-inset-bottom,0px)); text-align:center; color:#333; font-family:var(--font-heading); font-size:1.1rem; margin-top:auto;}
@@ -417,7 +403,6 @@ header{position:sticky;}
 .site-footer .social-icons{color:var(--color-primary); font-size:2em; margin:2px; line-height:1;}
 .site-footer .social-icons a{display:inline-block;}
 .site-footer .social-icons svg{display:block;}
-@media (prefers-color-scheme: dark){ .site-footer{background:#23262b; color:#ddd;} }
 
 /* Profil: aufklappbare Bereiche */
 .acc{padding:0;}
@@ -458,7 +443,4 @@ main.full:has(.rechtliches){display:block; min-height:0; padding-top:20px;}
   .rechtliches h2{font-size:1.8rem; padding-top:36px;}
   .rechtliches h3{font-size:1.2rem;}
   .rechtliches p, .rechtliches li{font-size:1.1rem; line-height:1.4;}
-}
-@media (prefers-color-scheme: dark){
-  .rechtliches, .rechtliches p, .rechtliches li{color:#ddd;} .rechtliches h2, .rechtliches h3{color:#fff;} .rechtliches h1, .rechtliches a{color:#9fc3e0;}
 }
